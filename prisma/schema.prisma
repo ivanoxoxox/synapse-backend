@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Registration {
+  id           String    @id
+  firstName    String
+  lastName     String
+  fullName     String
+  email        String
+  phone        String?
+  org          String?
+  designation  String?
+  session      String?
+  dietary      String?
+  notes        String?
+  studentId    String?
+  type         String
+  price        Float
+  status       String    @default("Registered")
+  registeredAt DateTime  @default(now())
+  checkedInAt  DateTime?
+  scans        ScanLog[]
+}
+
+model ScanLog {
+  id           Int          @id @default(autoincrement())
+  ticketId     String
+  name         String
+  type         String
+  time         DateTime     @default(now())
+  registration Registration @relation(fields: [ticketId], references: [id])
+}

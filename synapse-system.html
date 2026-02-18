@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synapse – Integrated Event Registration & Ticketing System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  /* ═══════════════════════════════════════════
+     SYNAPSE DESIGN SYSTEM
+     Aesthetic: Refined Tech / Neural Conference
+     Palette: Deep navy + electric cyan accent
+  ═══════════════════════════════════════════ */
+  :root {
+    --navy:      #0a0e1a;
+    --navy-mid:  #0f1629;
+    --navy-soft: #141d36;
+    --panel:     #111827;
+    --card:      #1a2340;
+    --border:    rgba(99,179,237,0.15);
+    --border-hi: rgba(99,179,237,0.4);
+    --cyan:      #38bdf8;
+    --cyan-glow: rgba(56,189,248,0.2);
+    --cyan-dark: #0284c7;
+    --violet:    #818cf8;
+    --violet-soft: rgba(129,140,248,0.15);
+    --text-hi:   #f0f6ff;
+    --text-mid:  #94a3b8;
+    --text-lo:   #475569;
+    --success:   #10b981;
+    --warning:   #f59e0b;
+    --danger:    #ef4444;
+    --gold:      #fbbf24;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --radius:    12px;
+    --radius-lg: 20px;
+    --shadow:    0 4px 24px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+    --glow:      0 0 30px rgba(56,189,248,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--navy);
+    color: var(--text-hi);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background mesh ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 800px 600px at 10% 20%, rgba(56,189,248,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 600px 400px at 90% 80%, rgba(129,140,248,0.05) 0%, transparent 70%),
+      linear-gradient(180deg, #0a0e1a 0%, #0d1220 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ══════════════════════════════════════
+     PAGES / VIEWS
+  ══════════════════════════════════════ */
+  .page { display: none; position: relative; z-index: 1; }
+  .page.active { display: block; }
+
+  /* ══════════════════════════════════════
+     NAVIGATION
+  ══════════════════════════════════════ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 68px;
+    background: rgba(10,14,26,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-head);
+    font-size: 1.4rem; font-weight: 800;
+    color: var(--text-hi); text-decoration: none;
+    cursor: pointer;
+  }
+
+  .nav-brand .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+
+  .nav-link {
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem; font-weight: 500;
+    color: var(--text-mid);
+    cursor: pointer; border: none; background: transparent;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+
+  .nav-link:hover { color: var(--text-hi); background: rgba(255,255,255,0.06); }
+  .nav-link.active { color: var(--cyan); background: var(--cyan-glow); }
+
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
+
+  .nav-badge {
+    display: flex; align-items: center; gap: 6px;
+    padding: 0.35rem 0.85rem;
+    background: var(--cyan-glow);
+    border: 1px solid var(--border-hi);
+    border-radius: 20px;
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--cyan);
+  }
+
+  .nav-badge .dot { width: 6px; height: 6px; background: var(--cyan); border-radius: 50%; animation: pulse-dot 2s infinite; }
+
+  @keyframes pulse-dot {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.5; transform:scale(0.7); }
+  }
+
+  /* ══════════════════════════════════════
+     PAGE WRAPPER
+  ══════════════════════════════════════ */
+  .page-wrap {
+    max-width: 1200px; margin: 0 auto;
+    padding: 104px 2rem 4rem;
+  }
+
+  .page-wrap.narrow { max-width: 520px; }
+  .page-wrap.centered { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+  /* ══════════════════════════════════════
+     TYPOGRAPHY
+  ══════════════════════════════════════ */
+  .display {
+    font-family: var(--font-head);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .display span.accent {
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .heading { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; }
+  .subtext { color: var(--text-mid); font-size: 0.95rem; line-height: 1.7; }
+  .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-lo); }
+  .caption { font-size: 0.82rem; color: var(--text-mid); }
+
+  /* ══════════════════════════════════════
+     CARDS
+  ══════════════════════════════════════ */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+  }
+
+  .card.glow { box-shadow: var(--shadow), var(--glow); }
+
+  .card-sm { padding: 1.25rem 1.5rem; border-radius: var(--radius); }
+
+  /* ══════════════════════════════════════
+     BUTTONS
+  ══════════════════════════════════════ */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 0.75rem 1.75rem;
+    border: none; border-radius: 10px;
+    font-family: var(--font-body); font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan-dark), var(--cyan));
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(56,189,248,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(56,189,248,0.45); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text-hi);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: var(--border-hi); }
+
+  .btn-ghost { background: transparent; color: var(--cyan); padding: 0.5rem 0.75rem; }
+  .btn-ghost:hover { background: var(--cyan-glow); }
+
+  .btn-danger { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
+  .btn-danger:hover { background: rgba(239,68,68,0.25); }
+
+  .btn-success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--success); }
+  .btn-success:hover { background: rgba(16,185,129,0.25); }
+
+  .btn-full { width: 100%; }
+  .btn-lg { padding: 1rem 2rem; font-size: 1rem; border-radius: 12px; }
+
+  /* ══════════════════════════════════════
+     FORM ELEMENTS
+  ══════════════════════════════════════ */
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .form-row { display: grid; gap: 1rem; }
+  .form-row.col2 { grid-template-columns: 1fr 1fr; }
+
+  label.form-label {
+    font-size: 0.8rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-mid);
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-hi);
+    font-family: var(--font-body); font-size: 0.925rem;
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  input::placeholder, textarea::placeholder { color: var(--text-lo); }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--cyan);
+    background: rgba(56,189,248,0.05);
+    box-shadow: 0 0 0 3px rgba(56,189,248,0.12);
+  }
+
+  select option { background: var(--panel); color: var(--text-hi); }
+
+  .input-icon-wrap { position: relative; }
+  .input-icon-wrap .icon {
+    position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+    color: var(--text-lo); pointer-events: none; font-size: 1rem;
+  }
+  .input-icon-wrap input { padding-left: 2.75rem; }
+
+  /* ══════════════════════════════════════
+     TABS
+  ══════════════════════════════════════ */
+  .tab-bar {
+    display: flex; gap: 0.25rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+  }
+
+  .tab-item {
+    flex: 1; padding: 0.6rem 1rem;
+    border: none; background: transparent;
+    border-radius: 7px;
+    font-family: var(--font-body); font-size: 0.875rem; font-weight: 500;
+    color: var(--text-mid); cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-item.active {
+    background: linear-gradient(135deg, var(--cyan-dark), var(--cyan));
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(56,189,248,0.3);
+  }
+  .tab-item:hover:not(.active) { color: var(--text-hi); background: rgba(255,255,255,0.06); }
+
+  /* ══════════════════════════════════════
+     BADGE / STATUS
+  ══════════════════════════════════════ */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem; font-weight: 600;
+  }
+  .badge-cyan { background: var(--cyan-glow); border: 1px solid var(--border-hi); color: var(--cyan); }
+  .badge-green { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--success); }
+  .badge-gold { background: rgba(251,191,36,0.15); border: 1px solid rgba(251,191,36,0.3); color: var(--gold); }
+  .badge-red { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; }
+  .badge-violet { background: var(--violet-soft); border: 1px solid rgba(129,140,248,0.3); color: var(--violet); }
+
+  /* ══════════════════════════════════════
+     ALERT
+  ══════════════════════════════════════ */
+  .alert {
+    padding: 0.9rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .alert-success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); color: var(--success); }
+  .alert-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; }
+  .alert-info { background: var(--cyan-glow); border: 1px solid var(--border-hi); color: var(--cyan); }
+
+  /* ══════════════════════════════════════
+     DIVIDER
+  ══════════════════════════════════════ */
+  .divider {
+    display: flex; align-items: center; gap: 1rem;
+    color: var(--text-lo); font-size: 0.8rem;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ══════════════════════════════════════
+     TABLE
+  ══════════════════════════════════════ */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { border-bottom: 1px solid var(--border); }
+  th {
+    padding: 0.85rem 1rem;
+    font-size: 0.75rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-lo); text-align: left;
+  }
+  td { padding: 0.9rem 1rem; font-size: 0.875rem; color: var(--text-mid); border-bottom: 1px solid rgba(255,255,255,0.04); }
+  tbody tr { transition: background 0.15s; }
+  tbody tr:hover { background: rgba(255,255,255,0.025); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* ══════════════════════════════════════
+     STAT CARDS
+  ══════════════════════════════════════ */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    position: relative; overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .stat-card.c1::before { background: linear-gradient(90deg, var(--cyan), transparent); }
+  .stat-card.c2::before { background: linear-gradient(90deg, var(--violet), transparent); }
+  .stat-card.c3::before { background: linear-gradient(90deg, var(--success), transparent); }
+  .stat-card.c4::before { background: linear-gradient(90deg, var(--gold), transparent); }
+
+  .stat-icon { font-size: 1.6rem; margin-bottom: 0.75rem; }
+  .stat-val { font-family: var(--font-head); font-size: 2rem; font-weight: 800; color: var(--text-hi); }
+  .stat-label { font-size: 0.8rem; color: var(--text-mid); margin-top: 2px; }
+
+  /* ══════════════════════════════════════
+     RECEIPT-STYLE TICKET
+  ══════════════════════════════════════ */
+  .ticket {
+    background: #ffffff;
+    color: #1a1a1a;
+    max-width: 360px; width: 100%; margin: 0 auto;
+    border-radius: 4px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+    font-family: 'Courier New', monospace;
+    position: relative;
+  }
+
+  /* Torn top edge */
+  .ticket::before {
+    content: '';
+    display: block;
+    height: 16px;
+    background: repeating-linear-gradient(-45deg, #ffffff 0px, #ffffff 6px, transparent 6px, transparent 12px),
+                repeating-linear-gradient(45deg, #ffffff 0px, #ffffff 6px, transparent 6px, transparent 12px);
+    background-color: var(--card);
+    background-size: 12px 16px;
+  }
+
+  /* Torn bottom edge */
+  .ticket::after {
+    content: '';
+    display: block;
+    height: 16px;
+    background: repeating-linear-gradient(-45deg, #ffffff 0px, #ffffff 6px, transparent 6px, transparent 12px),
+                repeating-linear-gradient(45deg, #ffffff 0px, #ffffff 6px, transparent 6px, transparent 12px);
+    background-color: var(--card);
+    background-size: 12px 16px;
+  }
+
+  .ticket-inner { padding: 1.5rem 1.75rem; }
+
+  .ticket-header {
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed #ccc;
+    margin-bottom: 1rem;
+  }
+
+  .ticket-conf-name {
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: #888; margin-bottom: 4px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .ticket-event-name {
+    font-size: 1.1rem; font-weight: 800;
+    color: #111; line-height: 1.2;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  .ticket-type-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 12px; border-radius: 2px;
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: 'Courier New', monospace;
+  }
+  .ticket-type-badge.vip { background: #fbbf24; color: #000; }
+  .ticket-type-badge.general { background: #0ea5e9; color: #fff; }
+  .ticket-type-badge.student { background: #818cf8; color: #fff; }
+
+  .ticket-body { display: flex; flex-direction: column; gap: 0; }
+
+  .ticket-details { flex: 1; }
+
+  .ticket-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 5px 0;
+    border-bottom: 1px dotted #e5e5e5;
+    font-size: 0.78rem;
+  }
+  .ticket-row:last-child { border-bottom: none; }
+
+  .ticket-row .field-label {
+    color: #888; text-transform: uppercase;
+    letter-spacing: 0.06em; font-size: 0.68rem;
+    white-space: nowrap; margin-right: 0.5rem;
+  }
+  .ticket-row .field-val {
+    color: #111; font-weight: 700; text-align: right;
+    font-size: 0.78rem; word-break: break-all;
+  }
+
+  .ticket-divider {
+    border: none; border-top: 1px dashed #ccc;
+    margin: 1rem 0;
+  }
+
+  .ticket-qr {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 12px 0 4px;
+  }
+  .ticket-qr-label {
+    font-size: 0.62rem; color: #999; text-transform: uppercase;
+    letter-spacing: 0.1em; font-family: 'Courier New', monospace;
+  }
+
+  .ticket-id-block {
+    text-align: center; padding: 8px 0 4px;
+  }
+  .ticket-id {
+    font-family: 'Courier New', monospace; font-size: 1rem;
+    font-weight: 900; color: #111; letter-spacing: 0.15em;
+  }
+
+  .ticket-notch { display: none; }
+  .ticket-fields-grid { display: none; }
+
+  /* ══════════════════════════════════════
+     PRINT OVERRIDES FOR RECEIPT
+  ══════════════════════════════════════ */
+  @media print {
+    .ticket { box-shadow: none; }
+  }
+
+  /* ══════════════════════════════════════
+     DECORATIVE
+  ══════════════════════════════════════ */
+  .deco-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+
+  /* ══════════════════════════════════════
+     UTILITIES
+  ══════════════════════════════════════ */
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .items-start { align-items: flex-start; }
+  .justify-between { justify-content: space-between; }
+  .justify-center { justify-content: center; }
+  .gap-xs { gap: 0.5rem; }
+  .gap-sm { gap: 0.75rem; }
+  .gap-md { gap: 1rem; }
+  .gap-lg { gap: 1.5rem; }
+  .gap-xl { gap: 2rem; }
+  .mt-xs { margin-top: 0.5rem; }
+  .mt-sm { margin-top: 0.75rem; }
+  .mt-md { margin-top: 1rem; }
+  .mt-lg { margin-top: 1.5rem; }
+  .mt-xl { margin-top: 2rem; }
+  .mb-sm { margin-bottom: 0.75rem; }
+  .mb-md { margin-bottom: 1rem; }
+  .mb-lg { margin-bottom: 1.5rem; }
+  .w-full { width: 100%; }
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+  .bold { font-weight: 700; }
+  .cyan { color: var(--cyan); }
+  .gold { color: var(--gold); }
+  .green { color: var(--success); }
+  .red { color: #ef4444; }
+  .violet { color: var(--violet); }
+  .hidden { display: none !important; }
+
+  .separator { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ══════════════════════════════════════
+     MODAL
+  ══════════════════════════════════════ */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    max-width: 600px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modal-in 0.25s ease;
+  }
+
+  @keyframes modal-in { from { opacity:0; transform:scale(0.95) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+  .modal-close { background: none; border: none; color: var(--text-lo); font-size: 1.4rem; cursor: pointer; padding: 4px; transition: color 0.2s; }
+  .modal-close:hover { color: var(--text-hi); }
+
+  /* ══════════════════════════════════════
+     SCROLL
+  ══════════════════════════════════════ */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.2); border-radius: 3px; }
+
+  /* ══════════════════════════════════════
+     PRINT STYLES (for ticket)
+  ══════════════════════════════════════ */
+  @media print {
+    nav, .btn, .modal-overlay { display: none !important; }
+    body { background: #fff; color: #000; }
+    .ticket { border: 2px solid #000; background: #fff !important; box-shadow: none !important; }
+    .ticket-conf-name, .ticket-event-name, .ticket-field .field-val { color: #000 !important; }
+    .ticket-field .field-label, .ticket-id { color: #555 !important; }
+    .ticket::before { display: none; }
+    .ticket-type-badge { border: 1px solid #000 !important; color: #000 !important; background: transparent !important; }
+    .ticket-notch { display: none; }
+  }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════ */
+  @media (max-width: 768px) {
+    .form-row.col2 { grid-template-columns: 1fr; }
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .page-wrap { padding: 88px 1rem 3rem; }
+    .ticket-body { flex-direction: column; }
+    .ticket-qr { width: 120px; margin: 0 auto; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ NAVIGATION ═══ -->
+<nav>
+  <div class="nav-brand" onclick="showPage('home')">
+    <div class="logo-icon">⚡</div>
+    Synapse
+  </div>
+
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('home');setActive(this)">Home</button>
+    <button class="nav-link" onclick="showPage('register');setActive(this)">Register</button>
+    <button class="nav-link" onclick="showPage('tickets');setActive(this)">My Tickets</button>
+    <button class="nav-link" onclick="showPage('admin');setActive(this)">Admin</button>
+    <button class="nav-link" onclick="showPage('scan');setActive(this)">Scan QR</button>
+  </div>
+
+  <div class="nav-right">
+    <div class="nav-badge"><span class="dot"></span> Live · 2025</div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 1: HOME / LANDING
+════════════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div class="page-wrap" style="padding-top: 80px;">
+
+    <!-- Hero -->
+    <div style="position:relative; min-height:520px; display:flex; align-items:center; overflow:hidden; border-radius: 28px; background: linear-gradient(135deg,#0b1428 0%, #0e1930 100%); border: 1px solid var(--border); margin-bottom: 2.5rem;">
+      <div class="deco-grid"></div>
+      <div class="hero-orb" style="width:500px;height:500px;background:rgba(56,189,248,0.08);top:-150px;right:-100px;"></div>
+      <div class="hero-orb" style="width:300px;height:300px;background:rgba(129,140,248,0.06);bottom:-100px;left:100px;"></div>
+
+      <div style="position:relative; z-index:2; padding: 3.5rem; max-width: 680px;">
+        <div class="badge badge-cyan mb-md" style="display:inline-flex;">🧠 &nbsp;Annual Flagship Conference</div>
+        <h1 class="display" style="margin: 1rem 0 1.5rem;">
+          Where Ideas<br><span class="accent">Converge &amp; Spark</span>
+        </h1>
+        <p class="subtext" style="font-size:1.05rem; max-width: 500px; margin-bottom: 2rem;">
+          Synapse 2025 brings together the brightest minds in technology, research, and innovation for three days of immersive sessions, workshops, and networking.
+        </p>
+        <div class="flex gap-sm flex-wrap">
+          <button class="btn btn-primary btn-lg" onclick="showPage('register')">Register Now →</button>
+          <button class="btn btn-secondary btn-lg" onclick="showPage('tickets')">View My Tickets</button>
+        </div>
+
+        <div class="flex gap-xl mt-xl">
+          <div>
+            <div class="stat-val" style="font-size:1.8rem;">2,400+</div>
+            <div class="caption">Attendees Expected</div>
+          </div>
+          <div>
+            <div class="stat-val" style="font-size:1.8rem;">48</div>
+            <div class="caption">Sessions & Workshops</div>
+          </div>
+          <div>
+            <div class="stat-val" style="font-size:1.8rem;">3 Days</div>
+            <div class="caption">March 15–17, 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticket types -->
+    <h2 class="heading mb-md">Choose Your Pass</h2>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap:1rem; margin-bottom:2.5rem;">
+      
+      <div class="card" style="border-color: rgba(56,189,248,0.3); position:relative; overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--cyan);"></div>
+        <div style="font-size:2rem;margin-bottom:1rem;">🎟️</div>
+        <div class="heading" style="font-size:1.1rem;">General Admission</div>
+        <div style="font-size:1.8rem; font-family:var(--font-head); font-weight:800; color:var(--cyan); margin:0.5rem 0;">₱1,500</div>
+        <p class="caption" style="margin-bottom:1.25rem;">Access to all main stage keynotes and expo floor. Includes meals and networking events.</p>
+        <button class="btn btn-primary btn-full" onclick="prefillType('General');showPage('register')">Get Ticket</button>
+      </div>
+
+      <div class="card glow" style="border-color: rgba(251,191,36,0.4); position:relative; overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),#f97316);"></div>
+        <div style="position:absolute;top:1rem;right:1rem;" class="badge badge-gold">⭐ Popular</div>
+        <div style="font-size:2rem;margin-bottom:1rem;">👑</div>
+        <div class="heading" style="font-size:1.1rem;">VIP Pass</div>
+        <div style="font-size:1.8rem; font-family:var(--font-head); font-weight:800; color:var(--gold); margin:0.5rem 0;">₱3,500</div>
+        <p class="caption" style="margin-bottom:1.25rem;">Priority seating, exclusive VIP lounge, speaker meet-and-greet, premium swag kit.</p>
+        <button class="btn btn-full" style="background:linear-gradient(135deg,#b45309,#d97706);color:#fff;" onclick="prefillType('VIP');showPage('register')">Get VIP Ticket</button>
+      </div>
+
+      <div class="card" style="border-color: rgba(129,140,248,0.3); position:relative; overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--violet);"></div>
+        <div style="font-size:2rem;margin-bottom:1rem;">🎓</div>
+        <div class="heading" style="font-size:1.1rem;">Student Rate</div>
+        <div style="font-size:1.8rem; font-family:var(--font-head); font-weight:800; color:var(--violet); margin:0.5rem 0;">₱750</div>
+        <p class="caption" style="margin-bottom:1.25rem;">For enrolled students with valid ID. Full access to sessions, workshops, and career fair.</p>
+        <button class="btn btn-full" style="background:linear-gradient(135deg,#4c1d95,#6d28d9);color:#fff;" onclick="prefillType('Student');showPage('register')">Get Student Ticket</button>
+      </div>
+    </div>
+
+    <!-- Schedule Preview -->
+    <div class="flex justify-between items-center mb-md">
+      <h2 class="heading">Event Schedule</h2>
+      <span class="badge badge-cyan">March 15–17, 2026</span>
+    </div>
+    <div class="card" style="margin-bottom:2.5rem;">
+      <div class="tab-bar mb-lg" id="sched-tabs">
+        <button class="tab-item active" onclick="schedTab(this,'day1')">Day 1 — Mar 15</button>
+        <button class="tab-item" onclick="schedTab(this,'day2')">Day 2 — Mar 16</button>
+        <button class="tab-item" onclick="schedTab(this,'day3')">Day 3 — Mar 17</button>
+      </div>
+
+      <div id="sched-day1">
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">08:00 AM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Registration & Welcome Breakfast</div>
+            <div class="caption">Main Lobby · All Attendees</div>
+          </div>
+        </div>
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">09:30 AM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Opening Keynote: The Age of Integrated Intelligence</div>
+            <div class="caption">Grand Hall A · Dr. Maria Santos, Chief AI Officer @ NeuralTech</div>
+          </div>
+        </div>
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">11:00 AM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Workshop: Building Resilient Distributed Systems</div>
+            <div class="caption">Room B3 · Eng. Carlo Reyes — Limited seats</div>
+          </div>
+        </div>
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">02:00 PM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Panel: Ethics in Emerging Technology</div>
+            <div class="caption">Grand Hall A · Moderated Discussion</div>
+          </div>
+        </div>
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">06:00 PM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Welcome Networking Cocktails <span class="badge badge-gold" style="margin-left:6px;">VIP</span></div>
+            <div class="caption">Sky Lounge · VIP Ticket Holders</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sched-day2" class="hidden">
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">09:00 AM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Keynote: Quantum Computing — Practical Applications Now</div>
+            <div class="caption">Grand Hall A · Prof. James Tan, MIT</div>
+          </div>
+        </div>
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">11:00 AM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Hackathon Kickoff &amp; Team Formation</div>
+            <div class="caption">Innovation Hub · All Attendees</div>
+          </div>
+        </div>
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">03:00 PM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Career Fair &amp; Expo Floor Opens</div>
+            <div class="caption">Exhibit Hall C · 40+ Companies</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sched-day3" class="hidden">
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">09:00 AM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Hackathon Final Presentations</div>
+            <div class="caption">Innovation Hub · Judging Panel</div>
+          </div>
+        </div>
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">01:00 PM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Closing Ceremony &amp; Awards</div>
+            <div class="caption">Grand Hall A · All Attendees</div>
+          </div>
+        </div>
+        <div class="flex gap-md items-start" style="padding:0.75rem; border-radius:10px; margin-bottom:0; background:rgba(56,189,248,0.04); border:1px solid var(--border);">
+          <div style="min-width:80px; text-align:right; color:var(--cyan); font-size:0.82rem; font-weight:600; padding-top:2px;">03:30 PM</div>
+          <div>
+            <div style="font-weight:600; color:var(--text-hi); font-size:0.925rem;">Farewell Reception &amp; Networking</div>
+            <div class="caption">Grand Foyer · All Attendees</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 2: REGISTRATION
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page-register">
+  <div class="page-wrap" style="max-width:680px;">
+    
+    <div class="flex items-center gap-sm mb-lg" style="cursor:pointer;" onclick="showPage('home')">
+      <span style="color:var(--text-lo); font-size:0.875rem;">← Back</span>
+    </div>
+
+    <div class="flex gap-sm items-center mb-xs">
+      <span class="badge badge-cyan">Step 1 of 2</span>
+    </div>
+    <h1 class="heading" style="margin-bottom:0.35rem;">Register for Synapse 2025</h1>
+    <p class="subtext mb-xl">Fill in your details below. Your QR ticket will be generated instantly.</p>
+
+    <div id="reg-alert" class="hidden"></div>
+
+    <div class="card glow">
+      
+      <!-- Ticket type selector -->
+      <div class="form-group mb-lg">
+        <label class="form-label">Ticket Type</label>
+        <div class="tab-bar" id="ticket-type-tabs">
+          <button class="tab-item active" onclick="selectTicketType(this,'General')">🎟️ General</button>
+          <button class="tab-item" onclick="selectTicketType(this,'VIP')">👑 VIP</button>
+          <button class="tab-item" onclick="selectTicketType(this,'Student')">🎓 Student</button>
+        </div>
+        <input type="hidden" id="selected-type" value="General">
+      </div>
+
+      <div class="separator"></div>
+
+      <!-- Personal info -->
+      <h3 class="label mb-md">Personal Information</h3>
+
+      <div class="form-row col2">
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          <input type="text" id="reg-firstname" placeholder="Maria" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          <input type="text" id="reg-lastname" placeholder="Santos" required>
+        </div>
+      </div>
+
+      <div class="form-group mt-md">
+        <label class="form-label">Email Address *</label>
+        <div class="input-icon-wrap">
+          <span class="icon">✉</span>
+          <input type="email" id="reg-email" placeholder="maria@example.com" required>
+        </div>
+      </div>
+
+      <div class="form-row col2 mt-md">
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <div class="input-icon-wrap">
+            <span class="icon">📱</span>
+            <input type="tel" id="reg-phone" placeholder="+63 9xx xxx xxxx">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Organization / School</label>
+          <input type="text" id="reg-org" placeholder="Company or Institution">
+        </div>
+      </div>
+
+      <div class="form-row col2 mt-md">
+        <div class="form-group">
+          <label class="form-label">Designation / Course</label>
+          <input type="text" id="reg-designation" placeholder="Software Engineer / BS CS">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Session Interest</label>
+          <select id="reg-session">
+            <option value="">Select a track</option>
+            <option>Artificial Intelligence</option>
+            <option>Cybersecurity</option>
+            <option>Quantum Computing</option>
+            <option>Web3 & Blockchain</option>
+            <option>UX & Product Design</option>
+            <option>Data Science & ML</option>
+            <option>All Tracks</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="student-fields" class="hidden">
+        <div class="separator"></div>
+        <h3 class="label mb-md">Student Verification</h3>
+        <div class="form-group">
+          <label class="form-label">Student ID Number *</label>
+          <input type="text" id="reg-studentid" placeholder="e.g. 2021-00123">
+        </div>
+        <div class="alert alert-info mt-sm">
+          ℹ️ A valid student ID must be presented at the venue for Student rate verification.
+        </div>
+      </div>
+
+      <div class="separator"></div>
+
+      <!-- Dietary & special needs -->
+      <div class="form-group">
+        <label class="form-label">Dietary Preference</label>
+        <select id="reg-dietary">
+          <option value="None">No restrictions</option>
+          <option>Vegetarian</option>
+          <option>Vegan</option>
+          <option>Halal</option>
+          <option>Gluten-free</option>
+          <option>Other (please specify in notes)</option>
+        </select>
+      </div>
+
+      <div class="form-group mt-md">
+        <label class="form-label">Additional Notes</label>
+        <textarea id="reg-notes" rows="2" placeholder="Any special requirements, accessibility needs, or questions..."></textarea>
+      </div>
+
+      <div class="separator"></div>
+
+      <div class="flex justify-between items-center">
+        <div>
+          <div class="label">Total Due</div>
+          <div id="price-display" style="font-family:var(--font-head);font-size:1.5rem;font-weight:800;color:var(--cyan);">₱1,500</div>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="submitRegistration()">
+          ✓ &nbsp;Confirm &amp; Generate Ticket
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 3: MY TICKETS
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page-tickets">
+  <div class="page-wrap">
+    <div class="flex justify-between items-center mb-xl">
+      <div>
+        <h1 class="heading">My Tickets</h1>
+        <p class="subtext mt-xs">Your registered tickets for Synapse 2025.</p>
+      </div>
+      <button class="btn btn-primary" onclick="showPage('register')">+ Register New</button>
+    </div>
+
+    <!-- Lookup by email -->
+    <div class="card mb-xl" id="ticket-lookup">
+      <h3 class="label mb-sm">Find Tickets by Email</h3>
+      <div class="flex gap-sm">
+        <div class="input-icon-wrap" style="flex:1;">
+          <span class="icon">✉</span>
+          <input type="email" id="lookup-email" placeholder="Enter your registered email">
+        </div>
+        <button class="btn btn-primary" onclick="lookupTickets()">Search</button>
+      </div>
+    </div>
+
+    <div id="tickets-list">
+      <div class="text-center" style="padding:4rem; color:var(--text-lo);">
+        <div style="font-size:3rem; margin-bottom:1rem;">🎟️</div>
+        <p>Enter your email above to view your tickets, or register for the event.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 4: ADMIN REDIRECT
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page-admin">
+  <div class="page-wrap narrow centered" style="padding-top:140px;">
+    <div style="font-size:3rem; margin-bottom:1rem;">🔐</div>
+    <h1 class="heading mb-xs">Admin Portal</h1>
+    <p class="subtext mt-xs mb-xl">The admin dashboard is now a separate secure panel.</p>
+    <a href="admin.html" class="btn btn-primary btn-lg" target="_blank">Open Admin Panel →</a>
+    <p class="caption mt-md" style="color:var(--text-lo);">Opens in a new tab</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 5: QR SCANNER
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page-scan">
+  <div class="page-wrap" style="max-width:560px;">
+    <h1 class="heading mb-xs">QR Code Scanner</h1>
+    <p class="subtext mb-xl">Scan or enter a ticket ID to check in attendees at the venue.</p>
+
+    <div class="card glow mb-lg">
+      <!-- Simulated camera viewfinder -->
+      <div style="
+        width:100%; aspect-ratio:1; border-radius:12px;
+        background:linear-gradient(135deg,#0b1428,#0e1a30);
+        border:2px dashed var(--border-hi);
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        position:relative; overflow:hidden;
+        margin-bottom:1rem;
+      ">
+        <div class="deco-grid"></div>
+        <!-- Corner marks -->
+        <div style="position:absolute;top:20px;left:20px;width:30px;height:30px;border-top:3px solid var(--cyan);border-left:3px solid var(--cyan);border-radius:3px 0 0 0;"></div>
+        <div style="position:absolute;top:20px;right:20px;width:30px;height:30px;border-top:3px solid var(--cyan);border-right:3px solid var(--cyan);border-radius:0 3px 0 0;"></div>
+        <div style="position:absolute;bottom:20px;left:20px;width:30px;height:30px;border-bottom:3px solid var(--cyan);border-left:3px solid var(--cyan);border-radius:0 0 0 3px;"></div>
+        <div style="position:absolute;bottom:20px;right:20px;width:30px;height:30px;border-bottom:3px solid var(--cyan);border-right:3px solid var(--cyan);border-radius:0 0 3px 0;"></div>
+        <!-- Scan line animation -->
+        <div id="scan-line" style="
+          position:absolute; left:20px; right:20px; height:2px;
+          background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+          animation:scan-move 2.5s ease-in-out infinite;
+        "></div>
+        <div style="position:relative;z-index:2;text-align:center;">
+          <div style="font-size:3.5rem;margin-bottom:0.5rem;">📷</div>
+          <p class="caption">Camera preview would appear here in production</p>
+        </div>
+      </div>
+
+      <div class="divider mb-md">or enter manually</div>
+
+      <div class="form-group mb-md">
+        <label class="form-label">Ticket ID / QR Code Data</label>
+        <div class="flex gap-sm">
+          <input type="text" id="scan-input" placeholder="SNP-XXXXXX" style="flex:1;" onkeypress="if(event.key==='Enter') scanTicket()">
+          <button class="btn btn-primary" onclick="scanTicket()">Check In</button>
+        </div>
+      </div>
+
+      <div id="scan-result" class="hidden"></div>
+    </div>
+
+    <!-- Recent scans log -->
+    <div class="section-header">
+      <h3 class="heading" style="font-size:1rem;">Recent Check-ins</h3>
+      <span class="badge badge-green" id="scan-count-badge">0 today</span>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div id="scan-log">
+        <div class="text-center" style="padding:2rem; color:var(--text-lo);">
+          <p class="caption">No check-ins yet today.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TICKET DETAIL MODAL
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="ticket-modal">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-header">
+      <div>
+        <h3 class="heading" style="font-size:1.1rem;">Your Event Ticket</h3>
+        <p class="caption mt-xs">Present this at the venue entrance.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div id="ticket-display"></div>
+
+    <div class="flex gap-sm mt-lg justify-center">
+      <button class="btn btn-secondary" onclick="printTicket()">🖨 Print Ticket</button>
+      <button class="btn btn-primary" onclick="closeModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCAN CSS ══════════ -->
+<style>
+  @keyframes scan-move {
+    0% { top: 20px; }
+    50% { top: calc(100% - 22px); }
+    100% { top: 20px; }
+  }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════ -->
+<script>
+/* ── API Config ── */
+const API = 'http://localhost:3000';
+
+/* ── State ── */
+let registrations = [];
+let scanLog = [];
+let adminLoggedIn = false;
+
+const prices = { 'General': 1500, 'VIP': 3500, 'Student': 750 };
+
+/* ── API Helpers ── */
+async function apiFetch(path, options = {}) {
+  const res = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(err.error || 'Request failed');
+  }
+  return res.json();
+}
+
+async function loadRegistrations() {
+  try {
+    registrations = await apiFetch('/registrations');
+  } catch (e) {
+    console.error('Could not load registrations:', e.message);
+  }
+}
+
+async function loadScanLog() {
+  try {
+    const data = await apiFetch('/scans');
+    scanLog = data.map(s => ({ id: s.ticketId, name: s.name, type: s.type, time: s.time }));
+  } catch (e) {
+    console.error('Could not load scan log:', e.message);
+  }
+}
+
+/* ── Navigation ── */
+async function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'admin') { await loadRegistrations(); updateAdminDashboard(); }
+  if (name === 'scan') { await loadScanLog(); updateScanLog(); }
+}
+
+function setActive(el) {
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ── Schedule tabs ── */
+function schedTab(el, day) {
+  document.querySelectorAll('#sched-tabs .tab-item').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['day1','day2','day3'].forEach(d => {
+    document.getElementById('sched-' + d).classList[d === day ? 'remove' : 'add']('hidden');
+  });
+}
+
+/* ── Registration ── */
+function prefillType(type) {
+  selectTicketTypeByName(type);
+}
+
+function selectTicketType(el, type) {
+  document.querySelectorAll('#ticket-type-tabs .tab-item').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('selected-type').value = type;
+  document.getElementById('price-display').textContent = '₱' + prices[type].toLocaleString();
+  document.getElementById('student-fields').classList[type === 'Student' ? 'remove' : 'add']('hidden');
+}
+
+function selectTicketTypeByName(type) {
+  const tabs = document.querySelectorAll('#ticket-type-tabs .tab-item');
+  const map = { General: 0, VIP: 1, Student: 2 };
+  if (map[type] !== undefined) selectTicketType(tabs[map[type]], type);
+}
+
+function genTicketId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let id = 'SNP-';
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+async function submitRegistration() {
+  const fn = document.getElementById('reg-firstname').value.trim();
+  const ln = document.getElementById('reg-lastname').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const type = document.getElementById('selected-type').value;
+  const phone = document.getElementById('reg-phone').value.trim();
+  const org = document.getElementById('reg-org').value.trim();
+  const designation = document.getElementById('reg-designation').value.trim();
+  const session = document.getElementById('reg-session').value;
+  const dietary = document.getElementById('reg-dietary').value;
+  const notes = document.getElementById('reg-notes').value.trim();
+  const studentId = document.getElementById('reg-studentid').value.trim();
+
+  const alertEl = document.getElementById('reg-alert');
+  alertEl.classList.add('hidden');
+
+  if (!fn || !ln || !email) {
+    alertEl.className = 'alert alert-error';
+    alertEl.innerHTML = '⚠️ Please fill in your first name, last name, and email.';
+    alertEl.classList.remove('hidden');
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alertEl.className = 'alert alert-error';
+    alertEl.innerHTML = '⚠️ Please enter a valid email address.';
+    alertEl.classList.remove('hidden');
+    return;
+  }
+  if (type === 'Student' && !studentId) {
+    alertEl.className = 'alert alert-error';
+    alertEl.innerHTML = '⚠️ Student ID is required for Student rate.';
+    alertEl.classList.remove('hidden');
+    return;
+  }
+
+  const payload = {
+    firstName: fn, lastName: ln,
+    fullName: fn + ' ' + ln,
+    email, phone, org, designation, session,
+    dietary, notes, studentId,
+    type,
+    price: prices[type],
+    status: 'Registered'
+  };
+
+  try {
+    alertEl.className = 'alert';
+    alertEl.innerHTML = '⏳ Submitting registration...';
+    alertEl.classList.remove('hidden');
+
+    const ticket = await apiFetch('/registrations', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    registrations.push(ticket);
+
+    // Clear form
+    ['reg-firstname','reg-lastname','reg-email','reg-phone','reg-org','reg-designation','reg-notes','reg-studentid'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('reg-session').selectedIndex = 0;
+    document.getElementById('reg-dietary').selectedIndex = 0;
+
+    alertEl.className = 'alert alert-success';
+    alertEl.innerHTML = '✅ Registration successful! Your ticket has been generated.';
+    alertEl.classList.remove('hidden');
+
+    showTicketModal(ticket);
+  } catch (err) {
+    alertEl.className = 'alert alert-error';
+    alertEl.innerHTML = '❌ Registration failed: ' + err.message;
+    alertEl.classList.remove('hidden');
+  }
+}
+
+/* ── Ticket Modal ── */
+function showTicketModal(ticket) {
+  document.getElementById('ticket-modal').classList.add('show');
+  renderTicket(ticket, 'ticket-display');
+}
+
+function closeModal() {
+  document.getElementById('ticket-modal').classList.remove('show');
+}
+
+function renderTicket(ticket, containerId) {
+  const container = document.getElementById(containerId);
+  const typeClass = ticket.type.toLowerCase();
+  const dateStr = new Date(ticket.registeredAt).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
+  const timeStr = new Date(ticket.registeredAt).toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' });
+
+  container.innerHTML = `
+    <div class="ticket" id="ticket-${ticket.id}">
+      <div class="ticket-inner">
+        <div class="ticket-header">
+          <div class="ticket-conf-name">⚡ Synapse 2025</div>
+          <div class="ticket-event-name">Integrated Event<br>Conference</div>
+          <div class="ticket-type-badge ${typeClass}">${ticket.type === 'VIP' ? '👑 VIP Pass' : ticket.type === 'Student' ? '🎓 Student' : '🎟️ General'}</div>
+        </div>
+
+        <div class="ticket-body">
+          <div class="ticket-details">
+            <div class="ticket-row">
+              <span class="field-label">Attendee</span>
+              <span class="field-val">${ticket.fullName}</span>
+            </div>
+            <div class="ticket-row">
+              <span class="field-label">Email</span>
+              <span class="field-val" style="font-size:0.7rem;">${ticket.email}</span>
+            </div>
+            ${ticket.org ? `<div class="ticket-row">
+              <span class="field-label">Org</span>
+              <span class="field-val">${ticket.org}</span>
+            </div>` : ''}
+            ${ticket.session ? `<div class="ticket-row">
+              <span class="field-label">Track</span>
+              <span class="field-val">${ticket.session}</span>
+            </div>` : ''}
+            <div class="ticket-row">
+              <span class="field-label">Date</span>
+              <span class="field-val">Mar 15–17, 2026</span>
+            </div>
+            <div class="ticket-row">
+              <span class="field-label">Venue</span>
+              <span class="field-val">SMX Convention</span>
+            </div>
+            <div class="ticket-row">
+              <span class="field-label">Registered</span>
+              <span class="field-val">${dateStr}</span>
+            </div>
+          </div>
+        </div>
+
+        <hr class="ticket-divider">
+
+        <div class="ticket-qr">
+          <div id="qr-${ticket.id}"></div>
+          <div class="ticket-qr-label">Scan to verify</div>
+        </div>
+
+        <hr class="ticket-divider">
+
+        <div class="ticket-id-block">
+          <div class="ticket-id">${ticket.id}</div>
+          <div style="font-size:0.62rem; color:#aaa; margin-top:4px; font-family:monospace;">
+            ${ticket.status === 'Checked In' ? '✅ CHECKED IN' : '🎟️ REGISTERED'}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const qrEl = document.getElementById('qr-' + ticket.id);
+    if (qrEl && typeof QRCode !== 'undefined') {
+      qrEl.innerHTML = '';
+      new QRCode(qrEl, {
+        text: ticket.id + '|' + ticket.fullName + '|' + ticket.type + '|' + ticket.email,
+        width: 120, height: 120,
+        colorDark: '#111111', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+  }, 100);
+}
+
+function printTicket() {
+  window.print();
+}
+
+/* ── My Tickets ── */
+async function lookupTickets() {
+  const email = document.getElementById('lookup-email').value.trim().toLowerCase();
+  const list = document.getElementById('tickets-list');
+
+  if (!email) {
+    list.innerHTML = '<div class="alert alert-error">Please enter an email address.</div>';
+    return;
+  }
+
+  list.innerHTML = '<div class="text-center" style="padding:2rem; color:var(--text-mid);">⏳ Looking up tickets...</div>';
+
+  try {
+    await loadRegistrations();
+    const found = registrations.filter(r => r.email.toLowerCase() === email);
+
+    if (!found.length) {
+      list.innerHTML = `
+        <div class="text-center" style="padding:3rem; color:var(--text-lo);">
+          <div style="font-size:3rem; margin-bottom:1rem;">🔍</div>
+          <p>No tickets found for <strong style="color:var(--text-mid);">${email}</strong>.</p>
+          <button class="btn btn-primary mt-md" onclick="showPage('register')">Register Now</button>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = `<div class="flex flex-col gap-lg">${found.map(t => `
+      <div>
+        ${renderTicketHTML(t)}
+        <div class="flex gap-sm mt-sm justify-center">
+          <button class="btn btn-secondary" onclick="showTicketModal(registrations.find(r=>r.id==='${t.id}'))">🔍 View Full Ticket</button>
+          <button class="btn btn-ghost" onclick="printTicket()">🖨 Print</button>
+        </div>
+      </div>
+    `).join('')}</div>`;
+
+    found.forEach(t => {
+      setTimeout(() => {
+        const qrEl = document.getElementById('qr-' + t.id);
+        if (qrEl && typeof QRCode !== 'undefined') {
+          qrEl.innerHTML = '';
+          new QRCode(qrEl, {
+            text: t.id + '|' + t.fullName + '|' + t.type + '|' + t.email,
+            width: 90, height: 90,
+            colorDark: '#0f172a', colorLight: '#ffffff'
+          });
+        }
+      }, 100);
+    });
+  } catch (err) {
+    list.innerHTML = `<div class="alert alert-error">❌ Could not fetch tickets: ${err.message}</div>`;
+  }
+}
+
+function renderTicketHTML(ticket) {
+  const typeClass = ticket.type.toLowerCase();
+  const dateStr = new Date(ticket.registeredAt).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
+
+  return `
+    <div class="ticket">
+      <div class="ticket-inner">
+        <div class="ticket-header">
+          <div class="ticket-conf-name">⚡ Synapse 2025</div>
+          <div class="ticket-event-name">Integrated Event Conference</div>
+          <div class="ticket-type-badge ${typeClass}">${ticket.type === 'VIP' ? '👑 VIP Pass' : ticket.type === 'Student' ? '🎓 Student' : '🎟️ General'}</div>
+        </div>
+        <div class="ticket-body">
+          <div class="ticket-details">
+            <div class="ticket-row"><span class="field-label">Attendee</span><span class="field-val">${ticket.fullName}</span></div>
+            <div class="ticket-row"><span class="field-label">Email</span><span class="field-val" style="font-size:0.7rem;">${ticket.email}</span></div>
+            ${ticket.org ? `<div class="ticket-row"><span class="field-label">Org</span><span class="field-val">${ticket.org}</span></div>` : ''}
+            ${ticket.session ? `<div class="ticket-row"><span class="field-label">Track</span><span class="field-val">${ticket.session}</span></div>` : ''}
+            <div class="ticket-row"><span class="field-label">Date</span><span class="field-val">Mar 15–17, 2026</span></div>
+            <div class="ticket-row"><span class="field-label">Venue</span><span class="field-val">SMX Convention</span></div>
+            <div class="ticket-row"><span class="field-label">Registered</span><span class="field-val">${dateStr}</span></div>
+          </div>
+        </div>
+        <hr class="ticket-divider">
+        <div class="ticket-qr">
+          <div id="qr-${ticket.id}"></div>
+          <div class="ticket-qr-label">Scan to verify</div>
+        </div>
+        <hr class="ticket-divider">
+        <div class="ticket-id-block">
+          <div class="ticket-id">${ticket.id}</div>
+          <div style="font-size:0.62rem; color:#aaa; margin-top:4px; font-family:monospace;">
+            ${ticket.status === 'Checked In' ? '✅ CHECKED IN' : '🎟️ REGISTERED'}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ── Admin ── */
+function adminLogin() {
+  const user = document.getElementById('admin-user').value.trim();
+  const pass = document.getElementById('admin-pass').value;
+  const err = document.getElementById('admin-login-err');
+
+  if (user === 'admin' && pass === 'synapse2025') {
+    adminLoggedIn = true;
+    document.getElementById('admin-login-gate').classList.add('hidden');
+    document.getElementById('admin-dashboard').classList.remove('hidden');
+    updateAdminDashboard();
+  } else {
+    err.textContent = '⚠️ Invalid username or password.';
+    err.classList.remove('hidden');
+  }
+}
+
+function adminLogout() {
+  adminLoggedIn = false;
+  document.getElementById('admin-login-gate').classList.remove('hidden');
+  document.getElementById('admin-dashboard').classList.add('hidden');
+  document.getElementById('admin-user').value = '';
+  document.getElementById('admin-pass').value = '';
+  document.getElementById('admin-login-err').classList.add('hidden');
+}
+
+function updateAdminDashboard() {
+  if (!adminLoggedIn) return;
+  const total = registrations.length;
+  const vip = registrations.filter(r => r.type === 'VIP').length;
+  const checked = registrations.filter(r => r.status === 'Checked In').length;
+  const revenue = registrations.reduce((s, r) => s + (r.price || 0), 0);
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-vip').textContent = vip;
+  document.getElementById('stat-checked').textContent = checked;
+  document.getElementById('stat-revenue').textContent = '₱' + revenue.toLocaleString();
+
+  renderAdminTable();
+}
+
+function renderAdminTable() {
+  const search = (document.getElementById('admin-search')?.value || '').toLowerCase();
+  const typeFilter = document.getElementById('admin-filter-type')?.value || '';
+  const statusFilter = document.getElementById('admin-filter-status')?.value || '';
+
+  let filtered = registrations.filter(r => {
+    const match = !search ||
+      r.fullName.toLowerCase().includes(search) ||
+      r.email.toLowerCase().includes(search) ||
+      r.id.toLowerCase().includes(search) ||
+      (r.org || '').toLowerCase().includes(search);
+    const typeMatch = !typeFilter || r.type === typeFilter;
+    const statusMatch = !statusFilter || r.status === statusFilter;
+    return match && typeMatch && statusMatch;
+  });
+
+  const tbody = document.getElementById('admin-tbody');
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:2.5rem; color:var(--text-lo);">No registrations found.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => {
+    const dateStr = new Date(r.registeredAt).toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
+    const typeBadge = r.type === 'VIP'
+      ? `<span class="badge badge-gold">👑 VIP</span>`
+      : r.type === 'Student'
+      ? `<span class="badge badge-violet">🎓 Student</span>`
+      : `<span class="badge badge-cyan">🎟️ General</span>`;
+    const statusBadge = r.status === 'Checked In'
+      ? `<span class="badge badge-green">✅ Checked In</span>`
+      : `<span class="badge" style="background:rgba(148,163,184,0.1);border:1px solid rgba(148,163,184,0.2);color:var(--text-mid);">Registered</span>`;
+
+    return `<tr>
+      <td><span style="font-family:monospace; font-size:0.8rem; color:var(--cyan);">${r.id}</span></td>
+      <td><strong style="color:var(--text-hi);">${r.fullName}</strong></td>
+      <td>${r.email}</td>
+      <td>${typeBadge}</td>
+      <td>${r.org || '—'}</td>
+      <td>${dateStr}</td>
+      <td>${statusBadge}</td>
+      <td>
+        <div class="flex gap-xs">
+          <button class="btn btn-ghost" style="padding:4px 10px; font-size:0.78rem;" onclick="adminViewTicket('${r.id}')">View</button>
+          ${r.status !== 'Checked In'
+            ? `<button class="btn btn-success" style="padding:4px 10px; font-size:0.78rem;" onclick="adminCheckIn('${r.id}')">✓ Check In</button>`
+            : `<button class="btn btn-danger" style="padding:4px 10px; font-size:0.78rem;" onclick="adminUncheck('${r.id}')">✗ Undo</button>`
+          }
+          <button class="btn btn-danger" style="padding:4px 10px; font-size:0.78rem;" onclick="adminDelete('${r.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function adminViewTicket(id) {
+  const ticket = registrations.find(r => r.id === id);
+  if (ticket) showTicketModal(ticket);
+}
+
+async function adminCheckIn(id) {
+  try {
+    const updated = await apiFetch(`/registrations/${id}/checkin`, { method: 'PATCH' });
+    const idx = registrations.findIndex(r => r.id === id);
+    if (idx !== -1) registrations[idx] = updated;
+    updateAdminDashboard();
+  } catch (err) {
+    alert('Check-in failed: ' + err.message);
+  }
+}
+
+async function adminUncheck(id) {
+  try {
+    const updated = await apiFetch(`/registrations/${id}/uncheckin`, { method: 'PATCH' });
+    const idx = registrations.findIndex(r => r.id === id);
+    if (idx !== -1) registrations[idx] = updated;
+    updateAdminDashboard();
+  } catch (err) {
+    alert('Undo failed: ' + err.message);
+  }
+}
+
+async function adminDelete(id) {
+  if (!confirm('Delete this registration? This cannot be undone.')) return;
+  try {
+    await apiFetch(`/registrations/${id}`, { method: 'DELETE' });
+    registrations = registrations.filter(r => r.id !== id);
+    updateAdminDashboard();
+  } catch (err) {
+    alert('Delete failed: ' + err.message);
+  }
+}
+
+function exportCSV() {
+  const headers = ['Ticket ID', 'Full Name', 'Email', 'Phone', 'Type', 'Organization', 'Designation', 'Session', 'Dietary', 'Status', 'Registered At'];
+  const rows = registrations.map(r => [
+    r.id, r.fullName, r.email, r.phone || '', r.type,
+    r.org || '', r.designation || '', r.session || '',
+    r.dietary || '', r.status,
+    new Date(r.registeredAt).toLocaleString('en-PH')
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'synapse2025-registrations.csv';
+  a.click();
+}
+
+/* ── QR Scanner ── */
+async function scanTicket() {
+  const input = document.getElementById('scan-input').value.trim();
+  const resultEl = document.getElementById('scan-result');
+
+  if (!input) { 
+    resultEl.className = 'alert alert-error';
+    resultEl.innerHTML = '⚠️ Please enter a ticket ID.';
+    resultEl.classList.remove('hidden');
+    return;
+  }
+
+  const ticketId = input.includes('|') ? input.split('|')[0] : input.toUpperCase();
+
+  resultEl.className = 'alert';
+  resultEl.innerHTML = '⏳ Verifying ticket...';
+  resultEl.classList.remove('hidden');
+
+  try {
+    // Fetch ticket from backend
+    let ticket;
+    try {
+      ticket = await apiFetch(`/registrations/${ticketId}`);
+    } catch (e) {
+      resultEl.className = 'alert alert-error';
+      resultEl.innerHTML = `❌ Ticket <strong>${ticketId}</strong> not found in the system.`;
+      return;
+    }
+
+    if (ticket.status === 'Checked In') {
+      resultEl.className = 'alert';
+      resultEl.style.cssText = 'background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:#f59e0b;padding:0.9rem 1.2rem;border-radius:10px;display:flex;align-items:flex-start;gap:10px;';
+      resultEl.innerHTML = `
+        ⚠️ <div>
+          <strong>Already Checked In</strong><br>
+          <span style="font-size:0.85rem;">${ticket.fullName} &mdash; ${ticket.type}</span><br>
+          <span style="font-size:0.8rem; opacity:0.8;">Checked in at: ${new Date(ticket.checkedInAt).toLocaleString('en-PH')}</span>
+        </div>
+      `;
+      return;
+    }
+
+    // Check in via API
+    await apiFetch(`/registrations/${ticketId}/checkin`, { method: 'PATCH' });
+
+    resultEl.className = 'alert alert-success';
+    resultEl.innerHTML = `
+      ✅ <div>
+        <strong>Check-in Successful!</strong><br>
+        <span style="font-size:0.875rem;">${ticket.fullName} — ${ticket.type} Pass</span><br>
+        <span style="font-size:0.8rem; opacity:0.8;">${ticket.org || ticket.email}</span>
+      </div>
+    `;
+    document.getElementById('scan-input').value = '';
+    await loadScanLog();
+    updateScanLog();
+
+    setTimeout(() => { resultEl.classList.add('hidden'); }, 5000);
+  } catch (err) {
+    resultEl.className = 'alert alert-error';
+    resultEl.innerHTML = `❌ Error: ${err.message}`;
+  }
+}
+
+function updateScanLog() {
+  const log = document.getElementById('scan-log');
+  const badge = document.getElementById('scan-count-badge');
+  const today = new Date().toDateString();
+  const todayScans = scanLog.filter(s => new Date(s.time).toDateString() === today);
+  badge.textContent = todayScans.length + ' today';
+
+  if (!scanLog.length) {
+    log.innerHTML = `<div class="text-center" style="padding:2rem; color:var(--text-lo);"><p class="caption">No check-ins yet today.</p></div>`;
+    return;
+  }
+
+  log.innerHTML = scanLog.slice(0,10).map(s => {
+    const t = new Date(s.time);
+    const timeStr = t.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' });
+    return `
+      <div class="flex justify-between items-center" style="padding:0.85rem 1.25rem; border-bottom:1px solid var(--border);">
+        <div class="flex items-center gap-sm">
+          <div class="badge badge-green" style="font-size:0.7rem;">✅</div>
+          <div>
+            <div style="font-size:0.875rem; font-weight:600; color:var(--text-hi);">${s.name}</div>
+            <div class="caption">${s.id} · ${s.type}</div>
+          </div>
+        </div>
+        <span style="font-size:0.78rem; color:var(--text-lo);">${timeStr}</span>
+      </div>
+    `;
+  }).join('') + (scanLog.length > 10 ? `<div class="text-center caption" style="padding:0.75rem; border-top:1px solid var(--border); color:var(--text-lo);">+ ${scanLog.length-10} more check-ins</div>` : '');
+}
+
+/* ── Init ── */
+(async function init() {
+  await loadScanLog();
+  updateScanLog();
+})();
+
+</script>
+</body>
+</html>
