@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
-const JWT_SECRET = 'synapse-secret-2025';
+const JWT_SECRET = process.env.JWT_SECRET || 'synapse-secret-2025';
 const ADMIN_USER = 'admin';
 const ADMIN_PASS_HASH = bcrypt.hashSync('synapse2025', 10);
 
@@ -43,16 +43,9 @@ app.get('/registrations/export/csv', requireAuth, async (req, res) => {
   const regs = await prisma.registration.findMany({ orderBy: { registeredAt: 'desc' } });
   const headers = ['Ticket ID','Full Name','Email','Phone','Type','Organization','Designation','Session','Dietary','Status','Registered At'];
   const rows = regs.map(r => [
-    r.id,
-    r.fullName,
-    r.email,
-    r.phone || '',
-    r.type,
-    r.org || '',
-    r.designation || '',
-    r.session || '',
-    r.dietary || '',
-    r.status,
+    r.id, r.fullName, r.email, r.phone || '', r.type,
+    r.org || '', r.designation || '', r.session || '',
+    r.dietary || '', r.status,
     new Date(r.registeredAt).toLocaleString('en-PH')
   ]);
   const csv = [headers, ...rows].map(row => row.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
@@ -123,6 +116,7 @@ app.get('/scans', requireAuth, async (req, res) => {
   res.json(scans);
 });
 
-app.listen(3000, () => {
-  console.log('Synapse backend running on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log('Synapse backend running on port ' + PORT);
 });
