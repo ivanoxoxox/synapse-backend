@@ -7,6 +7,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String         @id @default(cuid())
+  firstName     String
+  lastName      String
+  fullName      String
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now())
+  registrations Registration[]
+}
+
+model Event {
+  id               String         @id @default(cuid())
+  title            String
+  description      String
+  venue            String
+  startDate        DateTime
+  endDate          DateTime
+  status           String         @default("Upcoming")
+  bannerColor      String         @default("#38bdf8")
+  capacityGeneral  Int            @default(100)
+  capacityVIP      Int            @default(20)
+  capacityStudent  Int            @default(50)
+  priceGeneral     Float          @default(1500)
+  priceVIP         Float          @default(3500)
+  priceStudent     Float          @default(750)
+  createdAt        DateTime       @default(now())
+  registrations    Registration[]
+}
+
 model Registration {
   id           String    @id
   firstName    String
@@ -25,6 +55,10 @@ model Registration {
   status       String    @default("Registered")
   registeredAt DateTime  @default(now())
   checkedInAt  DateTime?
+  userId       String?
+  eventId      String?
+  user         User?     @relation(fields: [userId], references: [id])
+  event        Event?    @relation(fields: [eventId], references: [id])
   scans        ScanLog[]
 }
 
