@@ -97,7 +97,7 @@
 
   /* EVENT CARDS */
   .events-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
-  .event-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.3s;cursor:pointer;}
+  .event-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.3s;}
   .event-card:hover{border-color:var(--border-hi);transform:translateY(-4px);box-shadow:var(--shadow-lg),var(--glow);}
   .event-banner{height:8px;}
   .event-body{padding:1.5rem;}
@@ -192,24 +192,234 @@
 
 <!-- ═══ HOME PAGE ═══ -->
 <div class="page active" id="page-home">
-  <div class="page-wrap centered" style="padding-top:140px; min-height:100vh;">
-    <div class="deco-grid" style="position:fixed;"></div>
-    <div class="nav-badge mb-xl"><span class="dot"></span> Registration Open</div>
-    <h1 class="display mb-md">Where Innovation <br><span class="accent">Meets Community</span></h1>
-    <p class="subtext mb-xl" style="max-width:520px;">Discover upcoming conferences, workshops, and summits. Register in seconds, get your QR ticket instantly.</p>
-    <div class="flex gap-md justify-center">
-      <button class="btn btn-primary btn-lg" onclick="showPage('events');setActive(document.querySelectorAll('.nav-link')[1])">Browse Events →</button>
-      <button class="btn btn-secondary btn-lg" onclick="showPage('login');setActive(null)">Sign In</button>
+
+  <!-- HERO -->
+  <div style="position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 2rem 4rem;overflow:hidden;">
+    <div class="deco-grid" style="position:absolute;inset:0;"></div>
+
+    <!-- Floating photos -->
+    <div style="position:absolute;left:2%;top:20%;transform:rotate(-5deg);z-index:2;animation:floatA 6s ease-in-out infinite;">
+      <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=520&h=360&fit=crop&auto=format" style="border-radius:16px;border:2px solid rgba(56,189,248,0.4);box-shadow:0 8px 40px rgba(0,0,0,0.6);display:block;width:210px;" onerror="this.style.display='none'">
+    </div>
+    <div style="position:absolute;right:2%;top:18%;transform:rotate(5deg);z-index:2;animation:floatB 7s ease-in-out infinite;">
+      <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=520&h=360&fit=crop&auto=format" style="border-radius:16px;border:2px solid rgba(56,189,248,0.4);box-shadow:0 8px 40px rgba(0,0,0,0.6);display:block;width:210px;" onerror="this.style.display='none'">
+    </div>
+    <div style="position:absolute;left:5%;bottom:15%;transform:rotate(4deg);z-index:2;animation:floatB 8s ease-in-out infinite;">
+      <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=480&h=320&fit=crop&auto=format" style="border-radius:16px;border:2px solid rgba(129,140,248,0.4);box-shadow:0 8px 40px rgba(0,0,0,0.6);display:block;width:190px;" onerror="this.style.display='none'">
+    </div>
+    <div style="position:absolute;right:3%;bottom:18%;transform:rotate(-4deg);z-index:2;animation:floatA 9s ease-in-out infinite;">
+      <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=480&h=320&fit=crop&auto=format" style="border-radius:16px;border:2px solid rgba(129,140,248,0.4);box-shadow:0 8px 40px rgba(0,0,0,0.6);display:block;width:190px;" onerror="this.style.display='none'">
     </div>
 
-    <!-- Featured events preview -->
-    <div style="width:100%;margin-top:5rem;">
-      <div class="label mb-lg text-center">Upcoming Events</div>
+    <style>
+      @keyframes floatA{0%,100%{transform:rotate(-5deg) translateY(0);}50%{transform:rotate(-5deg) translateY(-14px);}}
+      @keyframes floatB{0%,100%{transform:rotate(5deg) translateY(0);}50%{transform:rotate(5deg) translateY(-10px);}}
+    </style>
+
+    <!-- Center content -->
+    <div style="position:relative;z-index:3;text-align:center;max-width:680px;">
+      <div class="nav-badge mb-lg" style="display:inline-flex;"><span class="dot"></span> Registration Now Open</div>
+      <h1 class="display mb-md">Where Innovation<br><span class="accent">Meets Community</span></h1>
+      <p class="subtext mb-xl" style="max-width:520px;margin:0 auto 2rem;">The Philippines&#39; premier technology event series &#8212; conferences, workshops, and summits designed to connect and inspire the next generation of tech leaders.</p>
+      <div class="flex gap-md justify-center">
+        <button class="btn btn-primary btn-lg" onclick="showPage('events');setActive(document.querySelectorAll('.nav-link')[1])">Browse Events &#8594;</button>
+        <button class="btn btn-secondary btn-lg" onclick="showPage('signup');setActive(null)">Create Account</button>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div style="position:relative;z-index:3;display:flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:1.25rem 2rem;margin-top:3rem;flex-wrap:wrap;justify-content:center;gap:0;">
+      <div style="text-align:center;padding:0 2rem;">
+        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--cyan);">5+</div>
+        <div class="label">Events This Year</div>
+      </div>
+      <div style="width:1px;height:40px;background:var(--border);"></div>
+      <div style="text-align:center;padding:0 2rem;">
+        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--violet);">1,800+</div>
+        <div class="label">Total Seats</div>
+      </div>
+      <div style="width:1px;height:40px;background:var(--border);"></div>
+      <div style="text-align:center;padding:0 2rem;">
+        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--success);">Free</div>
+        <div class="label">All Tickets</div>
+      </div>
+      <div style="width:1px;height:40px;background:var(--border);"></div>
+      <div style="text-align:center;padding:0 2rem;">
+        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--gold);">PH</div>
+        <div class="label">Metro Manila</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENTS LIST -->
+  <div style="background:rgba(13,18,32,0.95);border-top:1px solid var(--border);padding:5rem 2rem;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <div class="label mb-xs">Discover</div>
+          <h2 style="font-family:var(--font-head);font-size:2rem;font-weight:800;">Upcoming Events</h2>
+        </div>
+        <button class="btn btn-ghost" onclick="showPage('events');setActive(document.querySelectorAll('.nav-link')[1])">View All &#8594;</button>
+      </div>
       <div class="events-grid" id="home-events-grid">
         <div class="card text-center" style="padding:2rem;color:var(--text-lo);">Loading events...</div>
       </div>
     </div>
   </div>
+
+  <!-- WHY SYNAPSE -->
+  <div style="background:var(--navy);border-top:1px solid var(--border);padding:5rem 2rem;">
+    <div style="max-width:1200px;margin:0 auto;text-align:center;">
+      <div class="label mb-xs">Why Synapse</div>
+      <h2 style="font-family:var(--font-head);font-size:2rem;font-weight:800;margin-bottom:0.75rem;">Built for the Tech Community</h2>
+      <p class="subtext" style="max-width:520px;margin:0 auto 3rem;">Real events. Real connections. Zero barriers to entry.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;">
+        <div class="card" style="text-align:center;"><div style="font-size:2.5rem;margin-bottom:1rem;">🎟️</div><div style="font-family:var(--font-head);font-weight:700;margin-bottom:0.5rem;">Free to Attend</div><p class="caption">All Synapse events are completely free. Just register and show up.</p></div>
+        <div class="card" style="text-align:center;"><div style="font-size:2.5rem;margin-bottom:1rem;">⚡</div><div style="font-family:var(--font-head);font-weight:700;margin-bottom:0.5rem;">Instant QR Ticket</div><p class="caption">Register in seconds and receive your digital QR ticket immediately.</p></div>
+        <div class="card" style="text-align:center;"><div style="font-size:2.5rem;margin-bottom:1rem;">🤝</div><div style="font-family:var(--font-head);font-weight:700;margin-bottom:0.5rem;">Real Networking</div><p class="caption">Connect with developers, designers, founders, and industry leaders.</p></div>
+        <div class="card" style="text-align:center;"><div style="font-size:2.5rem;margin-bottom:1rem;">🧠</div><div style="font-family:var(--font-head);font-weight:700;margin-bottom:0.5rem;">Expert Speakers</div><p class="caption">Learn from the best minds in AI, cybersecurity, design, and more.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPEAKERS SECTION -->
+  <div style="background:rgba(13,18,32,0.98);border-top:1px solid var(--border);padding:5rem 2rem;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:3rem;">
+        <div class="label mb-xs">Featured</div>
+        <h2 style="font-family:var(--font-head);font-size:2rem;font-weight:800;margin-bottom:0.75rem;">Meet the Speakers</h2>
+        <p class="subtext" style="max-width:480px;margin:0 auto;">Industry leaders, engineers, and innovators sharing real-world insights across all our events.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.5rem;">
+        <!-- Speaker 1 -->
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face&auto=format" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--cyan);margin:0 auto 1rem;display:block;">
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.95rem;margin-bottom:3px;">Marcus Reyes</div>
+          <div style="font-size:0.78rem;color:var(--cyan);margin-bottom:4px;">Head of AI · Google PH</div>
+          <div class="caption">Large language models & enterprise AI deployment</div>
+        </div>
+        <!-- Speaker 2 -->
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face&auto=format" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--violet);margin:0 auto 1rem;display:block;">
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.95rem;margin-bottom:3px;">Sofia Lim</div>
+          <div style="font-size:0.78rem;color:var(--violet);margin-bottom:4px;">CTO · SecureNet Asia</div>
+          <div class="caption">Zero-trust architecture & cloud security</div>
+        </div>
+        <!-- Speaker 3 -->
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face&auto=format" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--success);margin:0 auto 1rem;display:block;">
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.95rem;margin-bottom:3px;">James Tan</div>
+          <div style="font-size:0.78rem;color:var(--success);margin-bottom:4px;">Lead Designer · Grab</div>
+          <div class="caption">Design systems and accessible product design</div>
+        </div>
+        <!-- Speaker 4 -->
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face&auto=format" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin:0 auto 1rem;display:block;">
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.95rem;margin-bottom:3px;">Ana Santos</div>
+          <div style="font-size:0.78rem;color:var(--gold);margin-bottom:4px;">Founder · DataStack PH</div>
+          <div class="caption">Building ML pipelines at scale for Southeast Asia</div>
+        </div>
+        <!-- Speaker 5 -->
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face&auto=format" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--cyan);margin:0 auto 1rem;display:block;">
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.95rem;margin-bottom:3px;">Carlo Mendoza</div>
+          <div style="font-size:0.78rem;color:var(--cyan);margin-bottom:4px;">VP Engineering · Maya</div>
+          <div class="caption">Scaling fintech infrastructure in emerging markets</div>
+        </div>
+        <!-- Speaker 6 -->
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <img src="https://images.unsplash.com/photo-1598550874175-4d0ef436c909?w=200&h=200&fit=crop&crop=face&auto=format" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--violet);margin:0 auto 1rem;display:block;">
+          <div style="font-family:var(--font-head);font-weight:700;font-size:0.95rem;margin-bottom:3px;">Mia Villanueva</div>
+          <div style="font-size:0.78rem;color:var(--violet);margin-bottom:4px;">Investor · Kaya Founders</div>
+          <div class="caption">What VCs look for in early-stage tech startups</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHEDULE / AGENDA SECTION -->
+  <div style="background:var(--navy);border-top:1px solid var(--border);padding:5rem 2rem;">
+    <div style="max-width:900px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:3rem;">
+        <div class="label mb-xs">What to Expect</div>
+        <h2 style="font-family:var(--font-head);font-size:2rem;font-weight:800;margin-bottom:0.75rem;">Sample Event Schedule</h2>
+        <p class="subtext" style="max-width:480px;margin:0 auto;">A typical Synapse event day — packed with talks, workshops, and networking.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <!-- Time slots -->
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:0;align-items:stretch;">
+          <div style="padding:1.25rem 1rem;border-right:2px solid var(--cyan);text-align:right;"><span style="font-family:monospace;font-size:0.82rem;color:var(--cyan);font-weight:700;">8:00 AM</span></div>
+          <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);"><div style="font-weight:600;color:var(--text-hi);">Registration & Breakfast</div><div class="caption">Pick up your QR ticket, grab coffee, meet attendees</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:0;align-items:stretch;">
+          <div style="padding:1.25rem 1rem;border-right:2px solid var(--violet);text-align:right;"><span style="font-family:monospace;font-size:0.82rem;color:var(--violet);font-weight:700;">9:00 AM</span></div>
+          <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(129,140,248,0.04);"><div style="font-weight:600;color:var(--text-hi);">Opening Keynote</div><div class="caption">State of Tech in the Philippines — main stage talk</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:0;align-items:stretch;">
+          <div style="padding:1.25rem 1rem;border-right:2px solid var(--cyan);text-align:right;"><span style="font-family:monospace;font-size:0.82rem;color:var(--cyan);font-weight:700;">10:30 AM</span></div>
+          <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);"><div style="font-weight:600;color:var(--text-hi);">Track Sessions (Breakout)</div><div class="caption">AI & ML · Cybersecurity · UX & Design · Startups</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:0;align-items:stretch;">
+          <div style="padding:1.25rem 1rem;border-right:2px solid var(--gold);text-align:right;"><span style="font-family:monospace;font-size:0.82rem;color:var(--gold);font-weight:700;">12:00 PM</span></div>
+          <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(251,191,36,0.04);"><div style="font-weight:600;color:var(--text-hi);">Lunch & Networking</div><div class="caption">Sponsored lunch, community meetups, sponsor booths</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:0;align-items:stretch;">
+          <div style="padding:1.25rem 1rem;border-right:2px solid var(--violet);text-align:right;"><span style="font-family:monospace;font-size:0.82rem;color:var(--violet);font-weight:700;">1:30 PM</span></div>
+          <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);"><div style="font-weight:600;color:var(--text-hi);">Afternoon Talks</div><div class="caption">Panel discussions, live demos, fireside chats</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:0;align-items:stretch;">
+          <div style="padding:1.25rem 1rem;border-right:2px solid var(--success);text-align:right;"><span style="font-family:monospace;font-size:0.82rem;color:var(--success);font-weight:700;">3:30 PM</span></div>
+          <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(16,185,129,0.04);"><div style="font-weight:600;color:var(--text-hi);">Hands-on Workshops</div><div class="caption">Small group sessions — bring your laptop!</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:0;align-items:stretch;">
+          <div style="padding:1.25rem 1rem;border-right:2px solid var(--cyan);text-align:right;"><span style="font-family:monospace;font-size:0.82rem;color:var(--cyan);font-weight:700;">5:30 PM</span></div>
+          <div style="padding:1.25rem 1.5rem;"><div style="font-weight:600;color:var(--text-hi);">Closing & After Party</div><div class="caption">Awards, closing remarks, networking mixer</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ SECTION -->
+  <div style="background:rgba(13,18,32,0.98);border-top:1px solid var(--border);padding:5rem 2rem;">
+    <div style="max-width:800px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:3rem;">
+        <div class="label mb-xs">Got Questions?</div>
+        <h2 style="font-family:var(--font-head);font-size:2rem;font-weight:800;margin-bottom:0.75rem;">Frequently Asked Questions</h2>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem;" id="faq-list">
+        <!-- FAQs injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER CTA -->
+  <div style="background:linear-gradient(135deg,rgba(56,189,248,0.1),rgba(129,140,248,0.1));border-top:1px solid var(--border);padding:5rem 2rem;text-align:center;">
+    <div style="max-width:600px;margin:0 auto;">
+      <h2 style="font-family:var(--font-head);font-size:2.5rem;font-weight:800;margin-bottom:1rem;">Ready to Join?</h2>
+      <p class="subtext mb-xl">Create a free account and register for any Synapse event in seconds.</p>
+      <div class="flex gap-md justify-center">
+        <button class="btn btn-primary btn-lg" onclick="showPage('events');setActive(document.querySelectorAll('.nav-link')[1])">Browse Events →</button>
+        <button class="btn btn-secondary btn-lg" onclick="showPage('signup');setActive(null)">Sign Up Free</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="background:var(--navy);border-top:1px solid var(--border);padding:2.5rem 2rem;">
+    <div style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+      <div class="flex items-center gap-sm">
+        <div class="logo-icon" style="width:28px;height:28px;font-size:14px;">⚡</div>
+        <span style="font-family:var(--font-head);font-weight:700;">Synapse</span>
+        <span class="caption" style="margin-left:0.5rem;">© 2025 All rights reserved.</span>
+      </div>
+      <div class="flex gap-md">
+        <span class="caption" style="cursor:pointer;hover:color:var(--cyan);">Events</span>
+        <span class="caption" style="cursor:pointer;">Contact</span>
+        <span class="caption" style="cursor:pointer;">Privacy</span>
+      </div>
+    </div>
+  </footer>
+
 </div>
 
 <!-- ═══ EVENTS PAGE ═══ -->
@@ -309,9 +519,11 @@
   </div>
 </div>
 
-rem 1.5rem;"></div>
-
-    <div class="label mb-xs">Step 1 of 2</div>
+<!-- ═══ REGISTER PAGE ═══ -->
+<div class="page" id="page-register">
+  <div class="page-wrap narrow">
+    <div id="reg-event-banner" class="card mb-xl" style="padding:1.25rem 1.5rem;"></div>
+    <div class="label mb-xs">Registration</div>
     <h1 class="heading mb-xs">Register for Event</h1>
     <p class="subtext mb-xl">Fill in your details. Your QR ticket will be generated instantly.</p>
 
@@ -436,8 +648,18 @@ async function userLogin() {
     sessionStorage.setItem('synapse_user', JSON.stringify(currentUser));
     updateNavUser();
     alertEl.classList.add('hidden');
-    showPage('tickets');
-    setActive(document.querySelectorAll('.nav-link')[2]);
+    // Redirect to pending event if any
+    const pendingEvent = sessionStorage.getItem('synapse_pending_event');
+    if (pendingEvent) {
+      sessionStorage.removeItem('synapse_pending_event');
+      allEvents.length ? openEventRegistration(pendingEvent) : (async () => {
+        allEvents = await apiFetch('/events');
+        openEventRegistration(pendingEvent);
+      })();
+    } else {
+      showPage('tickets');
+      setActive(document.querySelectorAll('.nav-link')[2]);
+    }
   } catch (e) {
     alertEl.className = 'alert alert-error';
     alertEl.textContent = '❌ ' + e.message;
@@ -464,8 +686,17 @@ async function userSignup() {
     sessionStorage.setItem('synapse_user', JSON.stringify(currentUser));
     updateNavUser();
     alertEl.classList.add('hidden');
-    showPage('tickets');
-    setActive(document.querySelectorAll('.nav-link')[2]);
+    const pendingEvent = sessionStorage.getItem('synapse_pending_event');
+    if (pendingEvent) {
+      sessionStorage.removeItem('synapse_pending_event');
+      allEvents.length ? openEventRegistration(pendingEvent) : (async () => {
+        allEvents = await apiFetch('/events');
+        openEventRegistration(pendingEvent);
+      })();
+    } else {
+      showPage('tickets');
+      setActive(document.querySelectorAll('.nav-link')[2]);
+    }
   } catch (e) {
     alertEl.className = 'alert alert-error';
     alertEl.textContent = '❌ ' + e.message;
@@ -514,7 +745,6 @@ function renderEventsGrid(events, grid) {
   }
   grid.innerHTML = events.map(e => {
     const start = new Date(e.startDate);
-    const end = new Date(e.endDate);
     const dateStr = start.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
     const statusBadge = e.status === 'Ongoing'
       ? `<span class="badge badge-green">🟢 Ongoing</span>`
@@ -522,7 +752,7 @@ function renderEventsGrid(events, grid) {
       ? `<span class="badge badge-cyan">🔵 Upcoming</span>`
       : `<span class="badge" style="background:rgba(100,100,100,0.1);border:1px solid rgba(100,100,100,0.2);color:var(--text-lo);">⚫ Completed</span>`;
     return `
-      <div class="event-card" onclick="openEventRegistration('${e.id}')">
+      <div class="event-card">
         <div class="event-banner" style="background:${e.bannerColor};"></div>
         <div class="event-body">
           <div class="event-meta">${statusBadge}</div>
@@ -533,8 +763,10 @@ function renderEventsGrid(events, grid) {
             <div class="event-detail">📍 ${e.venue}</div>
           </div>
           <div class="event-footer">
-            <div class="event-price">${e.priceGeneral > 0 ? '₱' + Number(e.priceGeneral).toLocaleString() : 'Free'}</div>
-            ${e.status === 'Completed' ? '<span style="color:var(--text-lo);font-size:0.82rem;">Event ended</span>' : '<button class="btn btn-primary btn-sm">Register →</button>'}
+            <div class="event-price">${e.priceGeneral > 0 ? '₱' + Number(e.priceGeneral).toLocaleString() : '🆓 Free'}</div>
+            ${e.status === 'Completed' 
+              ? '<span style="color:var(--text-lo);font-size:0.82rem;">Event ended</span>' 
+              : `<button class="btn btn-primary btn-sm" onclick="openEventRegistration('${e.id}')">Register →</button>`}
           </div>
         </div>
       </div>
@@ -552,6 +784,19 @@ function filterEvents(status, btn) {
 function openEventRegistration(eventId) {
   const event = allEvents.find(e => e.id === eventId);
   if (!event || event.status === 'Completed') return;
+
+  // Must be signed in to register
+  if (!currentUser || !userToken) {
+    sessionStorage.setItem('synapse_pending_event', eventId);
+    showPage('login');
+    setActive(null);
+    const alertEl = document.getElementById('login-alert');
+    alertEl.className = 'alert alert-info';
+    alertEl.textContent = '⚠️ Please sign in to register for this event.';
+    alertEl.classList.remove('hidden');
+    return;
+  }
+
   selectedEventId = eventId;
   currentEventPrice = event.priceGeneral || 0;
 
@@ -753,9 +998,43 @@ function closeModal() {
   document.getElementById('ticket-modal').classList.remove('show');
 }
 
+// ── FAQ ──
+const faqs = [
+  { q: 'Are Synapse events really free?', a: 'Yes! All Synapse events are 100% free to attend. Just create an account, register for the event, and bring your QR ticket.' },
+  { q: 'Do I need to print my ticket?', a: 'No printing needed. Just show your QR ticket on your phone at the entrance and our team will scan it.' },
+  { q: 'Can I register for multiple events?', a: 'Absolutely! You can register for as many Synapse events as you want under a single account.' },
+  { q: 'What should I bring to the event?', a: 'Your phone with your QR ticket, a valid ID, and your laptop if you plan to join the workshops. Everything else is provided!' },
+  { q: 'Where are Synapse events held?', a: 'All events are held in Metro Manila — specific venues are listed on each event card. Events are accessible via public transport.' },
+  { q: 'How do I cancel my registration?', a: 'You can view and manage your tickets from the My Tickets page after signing in. Cancellations are accepted up to 24 hours before the event.' },
+];
+
+function renderFAQs() {
+  const list = document.getElementById('faq-list');
+  if (!list) return;
+  list.innerHTML = faqs.map((f, i) => `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div onclick="toggleFAQ(${i})" style="display:flex;justify-content:space-between;align-items:center;padding:1.25rem 1.5rem;cursor:pointer;font-weight:600;color:var(--text-hi);">
+        <span>${f.q}</span>
+        <span id="faq-icon-${i}" style="color:var(--cyan);font-size:1.2rem;transition:transform 0.2s;">+</span>
+      </div>
+      <div id="faq-body-${i}" style="display:none;padding:0 1.5rem 1.25rem;color:var(--text-mid);font-size:0.9rem;line-height:1.7;">${f.a}</div>
+    </div>
+  `).join('');
+}
+
+function toggleFAQ(i) {
+  const body = document.getElementById('faq-body-' + i);
+  const icon = document.getElementById('faq-icon-' + i);
+  const open = body.style.display === 'block';
+  body.style.display = open ? 'none' : 'block';
+  icon.textContent = open ? '+' : '−';
+  icon.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+
 // ── Init ──
 updateNavUser();
 loadHomeEvents();
+renderFAQs();
 </script>
 </body>
 </html>
