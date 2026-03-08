@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Synapse – Integrated Event Registration & Ticketing System</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   /* ═══════════════════════════════════════════
@@ -32,8 +32,8 @@
     --warning:   #f59e0b;
     --danger:    #ef4444;
     --gold:      #fbbf24;
-    --font-head: 'Syne', sans-serif;
-    --font-body: 'DM Sans', sans-serif;
+    --font-head: 'Outfit', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
     --radius:    12px;
     --radius-lg: 20px;
     --shadow:    0 4px 24px rgba(0,0,0,0.4);
@@ -369,128 +369,98 @@
   .stat-label { font-size: 0.8rem; color: var(--text-mid); margin-top: 2px; }
 
   /* ══════════════════════════════════════
-     RECEIPT-STYLE TICKET
+     TICKET DISPLAY
   ══════════════════════════════════════ */
   .ticket {
-    background: #ffffff;
-    color: #1a1a1a;
-    max-width: 360px; width: 100%; margin: 0 auto;
-    border-radius: 4px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #0f1a35 0%, #0d1525 100%);
+    border: 1px solid var(--border-hi);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.5), 0 0 40px rgba(56,189,248,0.1);
+    max-width: 520px; width: 100%; margin: 0 auto;
     position: relative;
   }
 
-  /* Torn top edge */
   .ticket::before {
     content: '';
-    display: block;
-    height: 16px;
-    background: repeating-linear-gradient(-45deg, #ffffff 0px, #ffffff 6px, transparent 6px, transparent 12px),
-                repeating-linear-gradient(45deg, #ffffff 0px, #ffffff 6px, transparent 6px, transparent 12px);
-    background-color: var(--card);
-    background-size: 12px 16px;
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet), var(--cyan));
+    background-size: 200% 100%; animation: shimmer 3s linear infinite;
   }
 
-  /* Torn bottom edge */
-  .ticket::after {
-    content: '';
-    display: block;
-    height: 16px;
-    background: repeating-linear-gradient(-45deg, #ffffff 0px, #ffffff 6px, transparent 6px, transparent 12px),
-                repeating-linear-gradient(45deg, #ffffff 0px, #ffffff 6px, transparent 6px, transparent 12px);
-    background-color: var(--card);
-    background-size: 12px 16px;
-  }
-
-  .ticket-inner { padding: 1.5rem 1.75rem; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
   .ticket-header {
-    text-align: center;
-    padding-bottom: 1rem;
-    border-bottom: 1px dashed #ccc;
-    margin-bottom: 1rem;
+    padding: 1.5rem 2rem 1.25rem;
+    background: rgba(56,189,248,0.04);
+    border-bottom: 1px dashed rgba(99,179,237,0.2);
+    display: flex; justify-content: space-between; align-items: flex-start;
   }
 
   .ticket-conf-name {
-    font-size: 0.65rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.15em;
-    color: #888; margin-bottom: 4px;
-    font-family: 'Courier New', monospace;
+    font-family: var(--font-head); font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--cyan); margin-bottom: 4px;
   }
 
   .ticket-event-name {
-    font-size: 1.1rem; font-weight: 800;
-    color: #111; line-height: 1.2;
-    font-family: 'Courier New', monospace;
-    text-transform: uppercase; letter-spacing: 0.05em;
+    font-family: var(--font-head); font-size: 1.4rem; font-weight: 800;
+    color: var(--text-hi); line-height: 1.2;
   }
 
   .ticket-type-badge {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 3px 12px; border-radius: 2px;
-    font-size: 0.65rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.1em;
-    font-family: 'Courier New', monospace;
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    white-space: nowrap;
   }
-  .ticket-type-badge.vip { background: #fbbf24; color: #000; }
-  .ticket-type-badge.general { background: #0ea5e9; color: #fff; }
-  .ticket-type-badge.student { background: #818cf8; color: #fff; }
+  .ticket-type-badge.vip { background: rgba(251,191,36,0.2); border: 1px solid rgba(251,191,36,0.4); color: var(--gold); }
+  .ticket-type-badge.general { background: var(--cyan-glow); border: 1px solid var(--border-hi); color: var(--cyan); }
+  .ticket-type-badge.student { background: var(--violet-soft); border: 1px solid rgba(129,140,248,0.4); color: var(--violet); }
 
-  .ticket-body { display: flex; flex-direction: column; gap: 0; }
+  .ticket-body { padding: 1.5rem 2rem; display: flex; gap: 2rem; }
 
-  .ticket-details { flex: 1; }
+  .ticket-details { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
 
-  .ticket-row {
-    display: flex; justify-content: space-between; align-items: baseline;
-    padding: 5px 0;
-    border-bottom: 1px dotted #e5e5e5;
-    font-size: 0.78rem;
+  .ticket-field .field-label {
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-lo); margin-bottom: 2px;
   }
-  .ticket-row:last-child { border-bottom: none; }
-
-  .ticket-row .field-label {
-    color: #888; text-transform: uppercase;
-    letter-spacing: 0.06em; font-size: 0.68rem;
-    white-space: nowrap; margin-right: 0.5rem;
-  }
-  .ticket-row .field-val {
-    color: #111; font-weight: 700; text-align: right;
-    font-size: 0.78rem; word-break: break-all;
+  .ticket-field .field-val {
+    font-size: 0.925rem; font-weight: 500; color: var(--text-hi);
   }
 
-  .ticket-divider {
-    border: none; border-top: 1px dashed #ccc;
-    margin: 1rem 0;
-  }
+  .ticket-fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
   .ticket-qr {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    padding: 12px 0 4px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 12px;
   }
-  .ticket-qr-label {
-    font-size: 0.62rem; color: #999; text-transform: uppercase;
-    letter-spacing: 0.1em; font-family: 'Courier New', monospace;
+  .ticket-qr-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #334155; }
+
+  .ticket-footer {
+    padding: 1rem 2rem;
+    border-top: 1px dashed rgba(99,179,237,0.2);
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,0,0,0.2);
   }
 
-  .ticket-id-block {
-    text-align: center; padding: 8px 0 4px;
-  }
   .ticket-id {
-    font-family: 'Courier New', monospace; font-size: 1rem;
-    font-weight: 900; color: #111; letter-spacing: 0.15em;
+    font-family: monospace; font-size: 0.75rem; color: var(--text-lo);
+    letter-spacing: 0.1em;
   }
 
-  .ticket-notch { display: none; }
-  .ticket-fields-grid { display: none; }
-
-  /* ══════════════════════════════════════
-     PRINT OVERRIDES FOR RECEIPT
-  ══════════════════════════════════════ */
-  @media print {
-    .ticket { box-shadow: none; }
+  .ticket-notch {
+    position: absolute;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--navy);
+    border: 1px solid var(--border);
+    top: 50%; transform: translateY(-50%);
   }
+  .ticket-notch.left { left: -14px; }
+  .ticket-notch.right { right: -14px; }
 
   /* ══════════════════════════════════════
      DECORATIVE
@@ -982,15 +952,119 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
-     PAGE 4: ADMIN REDIRECT
+     PAGE 4: ADMIN DASHBOARD
 ════════════════════════════════════════════════════════ -->
 <div class="page" id="page-admin">
-  <div class="page-wrap narrow centered" style="padding-top:140px;">
-    <div style="font-size:3rem; margin-bottom:1rem;">🔐</div>
-    <h1 class="heading mb-xs">Admin Portal</h1>
-    <p class="subtext mt-xs mb-xl">The admin dashboard is now a separate secure panel.</p>
-    <a href="admin.html" class="btn btn-primary btn-lg" target="_blank">Open Admin Panel →</a>
-    <p class="caption mt-md" style="color:var(--text-lo);">Opens in a new tab</p>
+  <div class="page-wrap">
+
+    <!-- Admin Login gate -->
+    <div id="admin-login-gate">
+      <div style="max-width:420px; margin:2rem auto;">
+        <div class="text-center mb-xl">
+          <div class="nav-badge" style="display:inline-flex; margin-bottom:1rem;">🔐 Admin Access</div>
+          <h1 class="heading">Admin Portal</h1>
+          <p class="subtext mt-xs">Sign in to access the dashboard.</p>
+        </div>
+        <div class="card glow">
+          <div class="form-group mb-md">
+            <label class="form-label">Admin Username</label>
+            <div class="input-icon-wrap">
+              <span class="icon">👤</span>
+              <input type="text" id="admin-user" placeholder="admin">
+            </div>
+          </div>
+          <div class="form-group mb-lg">
+            <label class="form-label">Password</label>
+            <div class="input-icon-wrap">
+              <span class="icon">🔒</span>
+              <input type="password" id="admin-pass" placeholder="••••••••" onkeypress="if(event.key==='Enter') adminLogin()">
+            </div>
+          </div>
+          <div id="admin-login-err" class="hidden alert alert-error mb-md"></div>
+          <button class="btn btn-primary btn-full btn-lg" onclick="adminLogin()">Sign In</button>
+          <p class="caption text-center mt-md" style="color:var(--text-lo);">Hint: admin / synapse2025</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard (shown after login) -->
+    <div id="admin-dashboard" class="hidden">
+      
+      <div class="flex justify-between items-center mb-xl">
+        <div>
+          <div class="label mb-xs">Admin Dashboard</div>
+          <h1 class="heading">Synapse 2025 Overview</h1>
+        </div>
+        <div class="flex gap-sm">
+          <button class="btn btn-secondary" onclick="exportCSV()">↓ Export CSV</button>
+          <button class="btn btn-danger" onclick="adminLogout()">Sign Out</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid mb-xl" id="admin-stats">
+        <div class="stat-card c1">
+          <div class="stat-icon">👥</div>
+          <div class="stat-val" id="stat-total">0</div>
+          <div class="stat-label">Total Registrants</div>
+        </div>
+        <div class="stat-card c2">
+          <div class="stat-icon">👑</div>
+          <div class="stat-val" id="stat-vip">0</div>
+          <div class="stat-label">VIP Tickets</div>
+        </div>
+        <div class="stat-card c3">
+          <div class="stat-icon">✅</div>
+          <div class="stat-val" id="stat-checked">0</div>
+          <div class="stat-label">Checked In</div>
+        </div>
+        <div class="stat-card c4">
+          <div class="stat-icon">💰</div>
+          <div class="stat-val" id="stat-revenue">₱0</div>
+          <div class="stat-label">Total Revenue</div>
+        </div>
+      </div>
+
+      <!-- Search bar -->
+      <div class="flex gap-sm mb-md">
+        <div class="input-icon-wrap" style="flex:1;">
+          <span class="icon">🔍</span>
+          <input type="text" id="admin-search" placeholder="Search by name, email, or ticket ID..." oninput="renderAdminTable()">
+        </div>
+        <select id="admin-filter-type" onchange="renderAdminTable()" style="width:auto; min-width:140px;">
+          <option value="">All Types</option>
+          <option>General</option>
+          <option>VIP</option>
+          <option>Student</option>
+        </select>
+        <select id="admin-filter-status" onchange="renderAdminTable()" style="width:auto; min-width:140px;">
+          <option value="">All Status</option>
+          <option>Registered</option>
+          <option>Checked In</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="table-wrap">
+          <table id="admin-table">
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Type</th>
+                <th>Organization</th>
+                <th>Registered</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1093,53 +1167,20 @@
      JAVASCRIPT
 ════════════════════════════════════════════════════════ -->
 <script>
-/* ── API Config ── */
-const API = 'http://localhost:3000';
-
 /* ── State ── */
-let registrations = [];
-let scanLog = [];
+let registrations = JSON.parse(localStorage.getItem('synapse_regs') || '[]');
+let scanLog = JSON.parse(localStorage.getItem('synapse_scans') || '[]');
 let adminLoggedIn = false;
 
 const prices = { 'General': 1500, 'VIP': 3500, 'Student': 750 };
 
-/* ── API Helpers ── */
-async function apiFetch(path, options = {}) {
-  const res = await fetch(API + path, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw new Error(err.error || 'Request failed');
-  }
-  return res.json();
-}
-
-async function loadRegistrations() {
-  try {
-    registrations = await apiFetch('/registrations');
-  } catch (e) {
-    console.error('Could not load registrations:', e.message);
-  }
-}
-
-async function loadScanLog() {
-  try {
-    const data = await apiFetch('/scans');
-    scanLog = data.map(s => ({ id: s.ticketId, name: s.name, type: s.type, time: s.time }));
-  } catch (e) {
-    console.error('Could not load scan log:', e.message);
-  }
-}
-
 /* ── Navigation ── */
-async function showPage(name) {
+function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   window.scrollTo(0, 0);
-  if (name === 'admin') { await loadRegistrations(); updateAdminDashboard(); }
-  if (name === 'scan') { await loadScanLog(); updateScanLog(); }
+  if (name === 'admin') updateAdminDashboard();
+  if (name === 'scan') updateScanLog();
 }
 
 function setActive(el) {
@@ -1182,7 +1223,7 @@ function genTicketId() {
   return id;
 }
 
-async function submitRegistration() {
+function submitRegistration() {
   const fn = document.getElementById('reg-firstname').value.trim();
   const ln = document.getElementById('reg-lastname').value.trim();
   const email = document.getElementById('reg-email').value.trim();
@@ -1217,45 +1258,33 @@ async function submitRegistration() {
     return;
   }
 
-  const payload = {
+  const ticket = {
+    id: genTicketId(),
     firstName: fn, lastName: ln,
     fullName: fn + ' ' + ln,
     email, phone, org, designation, session,
     dietary, notes, studentId,
     type,
     price: prices[type],
-    status: 'Registered'
+    status: 'Registered',
+    registeredAt: new Date().toISOString()
   };
 
-  try {
-    alertEl.className = 'alert';
-    alertEl.innerHTML = '⏳ Submitting registration...';
-    alertEl.classList.remove('hidden');
+  registrations.push(ticket);
+  localStorage.setItem('synapse_regs', JSON.stringify(registrations));
 
-    const ticket = await apiFetch('/registrations', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+  // Clear form
+  ['reg-firstname','reg-lastname','reg-email','reg-phone','reg-org','reg-designation','reg-notes','reg-studentid'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('reg-session').selectedIndex = 0;
+  document.getElementById('reg-dietary').selectedIndex = 0;
 
-    registrations.push(ticket);
+  alertEl.className = 'alert alert-success';
+  alertEl.innerHTML = '✅ Registration successful! Your ticket has been generated.';
+  alertEl.classList.remove('hidden');
 
-    // Clear form
-    ['reg-firstname','reg-lastname','reg-email','reg-phone','reg-org','reg-designation','reg-notes','reg-studentid'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-    document.getElementById('reg-session').selectedIndex = 0;
-    document.getElementById('reg-dietary').selectedIndex = 0;
-
-    alertEl.className = 'alert alert-success';
-    alertEl.innerHTML = '✅ Registration successful! Your ticket has been generated.';
-    alertEl.classList.remove('hidden');
-
-    showTicketModal(ticket);
-  } catch (err) {
-    alertEl.className = 'alert alert-error';
-    alertEl.innerHTML = '❌ Registration failed: ' + err.message;
-    alertEl.classList.remove('hidden');
-  }
+  showTicketModal(ticket);
 }
 
 /* ── Ticket Modal ── */
@@ -1272,77 +1301,78 @@ function renderTicket(ticket, containerId) {
   const container = document.getElementById(containerId);
   const typeClass = ticket.type.toLowerCase();
   const dateStr = new Date(ticket.registeredAt).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
-  const timeStr = new Date(ticket.registeredAt).toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' });
 
   container.innerHTML = `
     <div class="ticket" id="ticket-${ticket.id}">
-      <div class="ticket-inner">
-        <div class="ticket-header">
+      <div class="ticket-notch left"></div>
+      <div class="ticket-notch right"></div>
+
+      <div class="ticket-header">
+        <div>
           <div class="ticket-conf-name">⚡ Synapse 2025</div>
           <div class="ticket-event-name">Integrated Event<br>Conference</div>
-          <div class="ticket-type-badge ${typeClass}">${ticket.type === 'VIP' ? '👑 VIP Pass' : ticket.type === 'Student' ? '🎓 Student' : '🎟️ General'}</div>
         </div>
+        <div class="ticket-type-badge ${typeClass}">${ticket.type === 'VIP' ? '👑 VIP Pass' : ticket.type === 'Student' ? '🎓 Student' : '🎟️ General'}</div>
+      </div>
 
-        <div class="ticket-body">
-          <div class="ticket-details">
-            <div class="ticket-row">
-              <span class="field-label">Attendee</span>
-              <span class="field-val">${ticket.fullName}</span>
+      <div class="ticket-body">
+        <div class="ticket-details">
+          <div class="ticket-field">
+            <div class="field-label">Attendee</div>
+            <div class="field-val" style="font-size:1.05rem; font-weight:700; color:#f0f6ff;">${ticket.fullName}</div>
+          </div>
+
+          <div class="ticket-fields-grid">
+            <div class="ticket-field">
+              <div class="field-label">Email</div>
+              <div class="field-val" style="font-size:0.8rem;">${ticket.email}</div>
             </div>
-            <div class="ticket-row">
-              <span class="field-label">Email</span>
-              <span class="field-val" style="font-size:0.7rem;">${ticket.email}</span>
+            <div class="ticket-field">
+              <div class="field-label">Organization</div>
+              <div class="field-val" style="font-size:0.82rem;">${ticket.org || '—'}</div>
             </div>
-            ${ticket.org ? `<div class="ticket-row">
-              <span class="field-label">Org</span>
-              <span class="field-val">${ticket.org}</span>
-            </div>` : ''}
-            ${ticket.session ? `<div class="ticket-row">
-              <span class="field-label">Track</span>
-              <span class="field-val">${ticket.session}</span>
-            </div>` : ''}
-            <div class="ticket-row">
-              <span class="field-label">Date</span>
-              <span class="field-val">Mar 15–17, 2026</span>
+            <div class="ticket-field">
+              <div class="field-label">Date</div>
+              <div class="field-val">Mar 15–17, 2026</div>
             </div>
-            <div class="ticket-row">
-              <span class="field-label">Venue</span>
-              <span class="field-val">SMX Convention</span>
-            </div>
-            <div class="ticket-row">
-              <span class="field-label">Registered</span>
-              <span class="field-val">${dateStr}</span>
+            <div class="ticket-field">
+              <div class="field-label">Venue</div>
+              <div class="field-val">SMX Convention</div>
             </div>
           </div>
-        </div>
 
-        <hr class="ticket-divider">
+          ${ticket.session ? `
+          <div class="ticket-field">
+            <div class="field-label">Track Interest</div>
+            <div class="field-val">${ticket.session}</div>
+          </div>` : ''}
+        </div>
 
         <div class="ticket-qr">
           <div id="qr-${ticket.id}"></div>
-          <div class="ticket-qr-label">Scan to verify</div>
+          <div class="ticket-qr-label">Scan to Verify</div>
         </div>
+      </div>
 
-        <hr class="ticket-divider">
-
-        <div class="ticket-id-block">
-          <div class="ticket-id">${ticket.id}</div>
-          <div style="font-size:0.62rem; color:#aaa; margin-top:4px; font-family:monospace;">
-            ${ticket.status === 'Checked In' ? '✅ CHECKED IN' : '🎟️ REGISTERED'}
-          </div>
-        </div>
+      <div class="ticket-footer">
+        <span class="ticket-id">ID: ${ticket.id}</span>
+        <span style="font-size:0.75rem; color:var(--text-lo);">Registered: ${dateStr}</span>
+        <span class="badge ${ticket.status === 'Checked In' ? 'badge-green' : 'badge-cyan'}" style="font-size:0.7rem;">
+          ${ticket.status === 'Checked In' ? '✅' : '🎟️'} ${ticket.status}
+        </span>
       </div>
     </div>
   `;
 
+  // Generate QR code
   setTimeout(() => {
     const qrEl = document.getElementById('qr-' + ticket.id);
     if (qrEl && typeof QRCode !== 'undefined') {
       qrEl.innerHTML = '';
       new QRCode(qrEl, {
         text: ticket.id + '|' + ticket.fullName + '|' + ticket.type + '|' + ticket.email,
-        width: 120, height: 120,
-        colorDark: '#111111', colorLight: '#ffffff',
+        width: 100, height: 100,
+        colorDark: '#0f172a', colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
       });
     }
@@ -1354,7 +1384,7 @@ function printTicket() {
 }
 
 /* ── My Tickets ── */
-async function lookupTickets() {
+function lookupTickets() {
   const email = document.getElementById('lookup-email').value.trim().toLowerCase();
   const list = document.getElementById('tickets-list');
 
@@ -1363,49 +1393,42 @@ async function lookupTickets() {
     return;
   }
 
-  list.innerHTML = '<div class="text-center" style="padding:2rem; color:var(--text-mid);">⏳ Looking up tickets...</div>';
+  const found = registrations.filter(r => r.email.toLowerCase() === email);
 
-  try {
-    await loadRegistrations();
-    const found = registrations.filter(r => r.email.toLowerCase() === email);
-
-    if (!found.length) {
-      list.innerHTML = `
-        <div class="text-center" style="padding:3rem; color:var(--text-lo);">
-          <div style="font-size:3rem; margin-bottom:1rem;">🔍</div>
-          <p>No tickets found for <strong style="color:var(--text-mid);">${email}</strong>.</p>
-          <button class="btn btn-primary mt-md" onclick="showPage('register')">Register Now</button>
-        </div>
-      `;
-      return;
-    }
-
-    list.innerHTML = `<div class="flex flex-col gap-lg">${found.map(t => `
-      <div>
-        ${renderTicketHTML(t)}
-        <div class="flex gap-sm mt-sm justify-center">
-          <button class="btn btn-secondary" onclick="showTicketModal(registrations.find(r=>r.id==='${t.id}'))">🔍 View Full Ticket</button>
-          <button class="btn btn-ghost" onclick="printTicket()">🖨 Print</button>
-        </div>
+  if (!found.length) {
+    list.innerHTML = `
+      <div class="text-center" style="padding:3rem; color:var(--text-lo);">
+        <div style="font-size:3rem; margin-bottom:1rem;">🔍</div>
+        <p>No tickets found for <strong style="color:var(--text-mid);">${email}</strong>.</p>
+        <button class="btn btn-primary mt-md" onclick="showPage('register')">Register Now</button>
       </div>
-    `).join('')}</div>`;
-
-    found.forEach(t => {
-      setTimeout(() => {
-        const qrEl = document.getElementById('qr-' + t.id);
-        if (qrEl && typeof QRCode !== 'undefined') {
-          qrEl.innerHTML = '';
-          new QRCode(qrEl, {
-            text: t.id + '|' + t.fullName + '|' + t.type + '|' + t.email,
-            width: 90, height: 90,
-            colorDark: '#0f172a', colorLight: '#ffffff'
-          });
-        }
-      }, 100);
-    });
-  } catch (err) {
-    list.innerHTML = `<div class="alert alert-error">❌ Could not fetch tickets: ${err.message}</div>`;
+    `;
+    return;
   }
+
+  list.innerHTML = `<div class="flex flex-col gap-lg">${found.map(t => `
+    <div>
+      ${renderTicketHTML(t)}
+      <div class="flex gap-sm mt-sm justify-center">
+        <button class="btn btn-secondary" onclick="showTicketModal(registrations.find(r=>r.id==='${t.id}'))">🔍 View Full Ticket</button>
+        <button class="btn btn-ghost" onclick="printTicket()">🖨 Print</button>
+      </div>
+    </div>
+  `).join('')}</div>`;
+
+  found.forEach(t => {
+    setTimeout(() => {
+      const qrEl = document.getElementById('qr-' + t.id);
+      if (qrEl && typeof QRCode !== 'undefined') {
+        qrEl.innerHTML = '';
+        new QRCode(qrEl, {
+          text: t.id + '|' + t.fullName + '|' + t.type + '|' + t.email,
+          width: 90, height: 90,
+          colorDark: '#0f172a', colorLight: '#ffffff'
+        });
+      }
+    }, 100);
+  });
 }
 
 function renderTicketHTML(ticket) {
@@ -1414,35 +1437,39 @@ function renderTicketHTML(ticket) {
 
   return `
     <div class="ticket">
-      <div class="ticket-inner">
-        <div class="ticket-header">
+      <div class="ticket-notch left"></div>
+      <div class="ticket-notch right"></div>
+      <div class="ticket-header">
+        <div>
           <div class="ticket-conf-name">⚡ Synapse 2025</div>
           <div class="ticket-event-name">Integrated Event Conference</div>
-          <div class="ticket-type-badge ${typeClass}">${ticket.type === 'VIP' ? '👑 VIP Pass' : ticket.type === 'Student' ? '🎓 Student' : '🎟️ General'}</div>
         </div>
-        <div class="ticket-body">
-          <div class="ticket-details">
-            <div class="ticket-row"><span class="field-label">Attendee</span><span class="field-val">${ticket.fullName}</span></div>
-            <div class="ticket-row"><span class="field-label">Email</span><span class="field-val" style="font-size:0.7rem;">${ticket.email}</span></div>
-            ${ticket.org ? `<div class="ticket-row"><span class="field-label">Org</span><span class="field-val">${ticket.org}</span></div>` : ''}
-            ${ticket.session ? `<div class="ticket-row"><span class="field-label">Track</span><span class="field-val">${ticket.session}</span></div>` : ''}
-            <div class="ticket-row"><span class="field-label">Date</span><span class="field-val">Mar 15–17, 2026</span></div>
-            <div class="ticket-row"><span class="field-label">Venue</span><span class="field-val">SMX Convention</span></div>
-            <div class="ticket-row"><span class="field-label">Registered</span><span class="field-val">${dateStr}</span></div>
+        <div class="ticket-type-badge ${typeClass}">${ticket.type === 'VIP' ? '👑 VIP Pass' : ticket.type === 'Student' ? '🎓 Student' : '🎟️ General'}</div>
+      </div>
+      <div class="ticket-body">
+        <div class="ticket-details">
+          <div class="ticket-field">
+            <div class="field-label">Attendee</div>
+            <div class="field-val" style="font-size:1rem; font-weight:700; color:#f0f6ff;">${ticket.fullName}</div>
+          </div>
+          <div class="ticket-fields-grid">
+            <div class="ticket-field"><div class="field-label">Email</div><div class="field-val" style="font-size:0.8rem;">${ticket.email}</div></div>
+            <div class="ticket-field"><div class="field-label">Organization</div><div class="field-val" style="font-size:0.82rem;">${ticket.org || '—'}</div></div>
+            <div class="ticket-field"><div class="field-label">Date</div><div class="field-val">Mar 15–17, 2026</div></div>
+            <div class="ticket-field"><div class="field-label">Venue</div><div class="field-val">SMX Convention</div></div>
           </div>
         </div>
-        <hr class="ticket-divider">
         <div class="ticket-qr">
           <div id="qr-${ticket.id}"></div>
-          <div class="ticket-qr-label">Scan to verify</div>
+          <div class="ticket-qr-label">Scan to Verify</div>
         </div>
-        <hr class="ticket-divider">
-        <div class="ticket-id-block">
-          <div class="ticket-id">${ticket.id}</div>
-          <div style="font-size:0.62rem; color:#aaa; margin-top:4px; font-family:monospace;">
-            ${ticket.status === 'Checked In' ? '✅ CHECKED IN' : '🎟️ REGISTERED'}
-          </div>
-        </div>
+      </div>
+      <div class="ticket-footer">
+        <span class="ticket-id">ID: ${ticket.id}</span>
+        <span style="font-size:0.75rem; color:var(--text-lo);">Registered: ${dateStr}</span>
+        <span class="badge ${ticket.status === 'Checked In' ? 'badge-green' : 'badge-cyan'}" style="font-size:0.7rem;">
+          ${ticket.status === 'Checked In' ? '✅' : '🎟️'} ${ticket.status}
+        </span>
       </div>
     </div>
   `;
@@ -1550,37 +1577,33 @@ function adminViewTicket(id) {
   if (ticket) showTicketModal(ticket);
 }
 
-async function adminCheckIn(id) {
-  try {
-    const updated = await apiFetch(`/registrations/${id}/checkin`, { method: 'PATCH' });
-    const idx = registrations.findIndex(r => r.id === id);
-    if (idx !== -1) registrations[idx] = updated;
+function adminCheckIn(id) {
+  const idx = registrations.findIndex(r => r.id === id);
+  if (idx !== -1) {
+    registrations[idx].status = 'Checked In';
+    registrations[idx].checkedInAt = new Date().toISOString();
+    localStorage.setItem('synapse_regs', JSON.stringify(registrations));
+    scanLog.unshift({ id, name: registrations[idx].fullName, type: registrations[idx].type, time: new Date().toISOString() });
+    localStorage.setItem('synapse_scans', JSON.stringify(scanLog));
     updateAdminDashboard();
-  } catch (err) {
-    alert('Check-in failed: ' + err.message);
   }
 }
 
-async function adminUncheck(id) {
-  try {
-    const updated = await apiFetch(`/registrations/${id}/uncheckin`, { method: 'PATCH' });
-    const idx = registrations.findIndex(r => r.id === id);
-    if (idx !== -1) registrations[idx] = updated;
+function adminUncheck(id) {
+  const idx = registrations.findIndex(r => r.id === id);
+  if (idx !== -1) {
+    registrations[idx].status = 'Registered';
+    delete registrations[idx].checkedInAt;
+    localStorage.setItem('synapse_regs', JSON.stringify(registrations));
     updateAdminDashboard();
-  } catch (err) {
-    alert('Undo failed: ' + err.message);
   }
 }
 
-async function adminDelete(id) {
+function adminDelete(id) {
   if (!confirm('Delete this registration? This cannot be undone.')) return;
-  try {
-    await apiFetch(`/registrations/${id}`, { method: 'DELETE' });
-    registrations = registrations.filter(r => r.id !== id);
-    updateAdminDashboard();
-  } catch (err) {
-    alert('Delete failed: ' + err.message);
-  }
+  registrations = registrations.filter(r => r.id !== id);
+  localStorage.setItem('synapse_regs', JSON.stringify(registrations));
+  updateAdminDashboard();
 }
 
 function exportCSV() {
@@ -1600,7 +1623,7 @@ function exportCSV() {
 }
 
 /* ── QR Scanner ── */
-async function scanTicket() {
+function scanTicket() {
   const input = document.getElementById('scan-input').value.trim();
   const resultEl = document.getElementById('scan-result');
 
@@ -1611,56 +1634,53 @@ async function scanTicket() {
     return;
   }
 
+  // Parse either raw ID or full QR data (id|name|type|email)
   const ticketId = input.includes('|') ? input.split('|')[0] : input.toUpperCase();
+  const ticket = registrations.find(r => r.id === ticketId);
 
-  resultEl.className = 'alert';
-  resultEl.innerHTML = '⏳ Verifying ticket...';
-  resultEl.classList.remove('hidden');
+  if (!ticket) {
+    resultEl.className = 'alert alert-error';
+    resultEl.innerHTML = `❌ Ticket <strong>${ticketId}</strong> not found in the system.`;
+    resultEl.classList.remove('hidden');
+    return;
+  }
 
-  try {
-    // Fetch ticket from backend
-    let ticket;
-    try {
-      ticket = await apiFetch(`/registrations/${ticketId}`);
-    } catch (e) {
-      resultEl.className = 'alert alert-error';
-      resultEl.innerHTML = `❌ Ticket <strong>${ticketId}</strong> not found in the system.`;
-      return;
-    }
-
-    if (ticket.status === 'Checked In') {
-      resultEl.className = 'alert';
-      resultEl.style.cssText = 'background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:#f59e0b;padding:0.9rem 1.2rem;border-radius:10px;display:flex;align-items:flex-start;gap:10px;';
-      resultEl.innerHTML = `
-        ⚠️ <div>
-          <strong>Already Checked In</strong><br>
-          <span style="font-size:0.85rem;">${ticket.fullName} &mdash; ${ticket.type}</span><br>
-          <span style="font-size:0.8rem; opacity:0.8;">Checked in at: ${new Date(ticket.checkedInAt).toLocaleString('en-PH')}</span>
-        </div>
-      `;
-      return;
-    }
-
-    // Check in via API
-    await apiFetch(`/registrations/${ticketId}/checkin`, { method: 'PATCH' });
-
-    resultEl.className = 'alert alert-success';
+  if (ticket.status === 'Checked In') {
+    resultEl.className = 'alert';
+    resultEl.style.cssText = 'background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:#f59e0b;padding:0.9rem 1.2rem;border-radius:10px;display:flex;align-items:flex-start;gap:10px;';
     resultEl.innerHTML = `
-      ✅ <div>
-        <strong>Check-in Successful!</strong><br>
-        <span style="font-size:0.875rem;">${ticket.fullName} — ${ticket.type} Pass</span><br>
-        <span style="font-size:0.8rem; opacity:0.8;">${ticket.org || ticket.email}</span>
+      ⚠️ <div>
+        <strong>Already Checked In</strong><br>
+        <span style="font-size:0.85rem;">${ticket.fullName} &mdash; ${ticket.type}</span><br>
+        <span style="font-size:0.8rem; opacity:0.8;">Checked in at: ${new Date(ticket.checkedInAt).toLocaleString('en-PH')}</span>
       </div>
     `;
-    document.getElementById('scan-input').value = '';
-    await loadScanLog();
-    updateScanLog();
-
-    setTimeout(() => { resultEl.classList.add('hidden'); }, 5000);
-  } catch (err) {
-    resultEl.className = 'alert alert-error';
-    resultEl.innerHTML = `❌ Error: ${err.message}`;
+    resultEl.classList.remove('hidden');
+    return;
   }
+
+  // Check in!
+  const idx = registrations.indexOf(ticket);
+  registrations[idx].status = 'Checked In';
+  registrations[idx].checkedInAt = new Date().toISOString();
+  localStorage.setItem('synapse_regs', JSON.stringify(registrations));
+
+  scanLog.unshift({ id: ticketId, name: ticket.fullName, type: ticket.type, time: new Date().toISOString() });
+  localStorage.setItem('synapse_scans', JSON.stringify(scanLog));
+
+  resultEl.className = 'alert alert-success';
+  resultEl.innerHTML = `
+    ✅ <div>
+      <strong>Check-in Successful!</strong><br>
+      <span style="font-size:0.875rem;">${ticket.fullName} — ${ticket.type} Pass</span><br>
+      <span style="font-size:0.8rem; opacity:0.8;">${ticket.org || ticket.email}</span>
+    </div>
+  `;
+  resultEl.classList.remove('hidden');
+  document.getElementById('scan-input').value = '';
+  updateScanLog();
+
+  setTimeout(() => { resultEl.classList.add('hidden'); }, 5000);
 }
 
 function updateScanLog() {
@@ -1693,12 +1713,21 @@ function updateScanLog() {
   }).join('') + (scanLog.length > 10 ? `<div class="text-center caption" style="padding:0.75rem; border-top:1px solid var(--border); color:var(--text-lo);">+ ${scanLog.length-10} more check-ins</div>` : '');
 }
 
-/* ── Init ── */
-(async function init() {
-  await loadScanLog();
-  updateScanLog();
+/* ── Seed some demo data if empty ── */
+(function seedDemo() {
+  if (registrations.length) return;
+  const demoData = [
+    { id:'SNP-ALPHA', firstName:'Ana', lastName:'Reyes', fullName:'Ana Reyes', email:'ana.reyes@example.com', phone:'09171234567', org:'TechCorp PH', designation:'CTO', session:'Artificial Intelligence', dietary:'None', notes:'', type:'VIP', price:3500, status:'Checked In', registeredAt: new Date(Date.now()-86400000*2).toISOString(), checkedInAt: new Date(Date.now()-3600000).toISOString() },
+    { id:'SNP-BRAVO', firstName:'Marco', lastName:'Santos', fullName:'Marco Santos', email:'marco@university.edu', phone:'09189876543', org:'State University', designation:'BS Computer Science', session:'Data Science & ML', dietary:'Vegetarian', notes:'', studentId:'2021-00456', type:'Student', price:750, status:'Registered', registeredAt: new Date(Date.now()-86400000).toISOString() },
+    { id:'SNP-DELTA', firstName:'Carla', lastName:'Bautista', fullName:'Carla Bautista', email:'carla@startup.io', phone:'09201112233', org:'Startup.io', designation:'Product Manager', session:'UX & Product Design', dietary:'Halal', notes:'', type:'General', price:1500, status:'Registered', registeredAt: new Date(Date.now()-3600000*5).toISOString() },
+    { id:'SNP-ECHO', firstName:'Julius', lastName:'Mendoza', fullName:'Julius Mendoza', email:'julius.m@bigcorp.com', phone:'09154445566', org:'BigCorp Ltd', designation:'Senior Engineer', session:'Cybersecurity', dietary:'None', notes:'Wheelchair accessible seating needed', type:'VIP', price:3500, status:'Registered', registeredAt: new Date(Date.now()-3600000*2).toISOString() },
+  ];
+  registrations.push(...demoData);
+  localStorage.setItem('synapse_regs', JSON.stringify(registrations));
 })();
 
+/* ── Init ── */
+updateScanLog();
 </script>
 </body>
 </html>
