@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Synapse – Event Registration</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
@@ -14,17 +14,18 @@
     --violet:#818cf8;--violet-soft:rgba(129,140,248,0.15);
     --text-hi:#f0f6ff;--text-mid:#94a3b8;--text-lo:#475569;
     --success:#10b981;--warning:#f59e0b;--danger:#ef4444;--gold:#fbbf24;
-    --font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+    --font-head:'Outfit',sans-serif;--font-body:'Plus Jakarta Sans',sans-serif;
     --radius:12px;--radius-lg:20px;
     --shadow:0 4px 24px rgba(0,0,0,0.4);--shadow-lg:0 8px 48px rgba(0,0,0,0.6);
     --glow:0 0 30px rgba(56,189,248,0.15);
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
   body{font-family:var(--font-body);background:var(--navy);color:var(--text-hi);min-height:100vh;overflow-x:hidden;}
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 800px 600px at 10% 20%,rgba(56,189,248,0.06) 0%,transparent 70%),radial-gradient(ellipse 600px 400px at 90% 80%,rgba(129,140,248,0.05) 0%,transparent 70%),linear-gradient(180deg,#0a0e1a 0%,#0d1220 100%);pointer-events:none;z-index:0;}
 
   /* NAV */
-  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:68px;background:rgba(10,14,26,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:68px;background:rgba(10,14,26,0.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
   .nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--text-hi);cursor:pointer;}
   .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--violet));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
   .nav-links{display:flex;align-items:center;gap:0.25rem;}
@@ -38,15 +39,26 @@
 
   /* PAGES */
   .page{display:none;position:relative;z-index:1;}
-  .page.active{display:block;}
+  .page.active{display:block;animation:fadeInPage 0.3s ease;}
+  @keyframes fadeInPage{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
   .page-wrap{max-width:1200px;margin:0 auto;padding:104px 2rem 4rem;}
   .page-wrap.narrow{max-width:520px;}
   .page-wrap.centered{display:flex;flex-direction:column;align-items:center;text-align:center;}
 
+  /* MOBILE */
+  @media(max-width:640px){
+    nav{padding:0 1.25rem;}
+    .nav-links{display:none;}
+    .page-wrap{padding:90px 1.25rem 3rem;}
+    .form-row.col2{grid-template-columns:1fr;}
+    .btn-lg{padding:0.85rem 1.5rem;font-size:0.95rem;}
+    .events-grid{grid-template-columns:1fr !important;}
+  }
+
   /* TYPOGRAPHY */
-  .display{font-family:var(--font-head);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;}
+  .display{font-family:var(--font-head);font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.05;letter-spacing:-0.03em;}
   .display span.accent{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-  .heading{font-family:var(--font-head);font-size:1.5rem;font-weight:700;}
+  .heading{font-family:var(--font-head);font-size:1.5rem;font-weight:800;letter-spacing:-0.01em;}
   .subtext{color:var(--text-mid);font-size:0.95rem;line-height:1.7;}
   .label{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-lo);}
   .caption{font-size:0.82rem;color:var(--text-mid);}
@@ -193,59 +205,70 @@
 <!-- ═══ HOME PAGE ═══ -->
 <div class="page active" id="page-home">
 
+  <style>
+    @keyframes floatA{0%,100%{transform:rotate(-5deg) translateY(0);}50%{transform:rotate(-5deg) translateY(-16px);}}
+    @keyframes floatB{0%,100%{transform:rotate(5deg) translateY(0);}50%{transform:rotate(5deg) translateY(-12px);}}
+    .hero-photo { border-radius:20px; box-shadow:0 16px 60px rgba(0,0,0,0.7); display:block; transition: transform 0.3s; }
+    .hero-photo:hover { transform: scale(1.04) !important; }
+    @media(max-width:768px){
+      .float-photo { display:none !important; }
+      .hero-inner { padding: 100px 1.5rem 3rem !important; }
+      .stats-bar { flex-direction:column !important; gap:1rem !important; padding:1.5rem !important; }
+      .stats-bar .divider { display:none !important; }
+      .stats-bar > div { padding:0 !important; }
+    }
+  </style>
+
   <!-- HERO -->
-  <div style="position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 2rem 4rem;overflow:hidden;">
+  <div class="hero-inner" style="position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 4rem 5rem;overflow:hidden;">
     <div class="deco-grid" style="position:absolute;inset:0;"></div>
 
-    <!-- Floating photos -->
-    <div style="position:absolute;left:2%;top:20%;transform:rotate(-5deg);z-index:2;animation:floatA 6s ease-in-out infinite;">
-      <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=520&h=360&fit=crop&auto=format" style="border-radius:16px;border:2px solid rgba(56,189,248,0.4);box-shadow:0 8px 40px rgba(0,0,0,0.6);display:block;width:210px;" onerror="this.style.display='none'">
+    <!-- Floating photos — LEFT -->
+    <div class="float-photo" style="position:absolute;left:3%;top:12%;transform:rotate(-6deg);z-index:2;animation:floatA 6s ease-in-out infinite;">
+      <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=700&h=480&fit=crop&auto=format" class="hero-photo" style="width:280px;border:2px solid rgba(56,189,248,0.5);" onerror="this.parentElement.style.display='none'">
     </div>
-    <div style="position:absolute;right:2%;top:18%;transform:rotate(5deg);z-index:2;animation:floatB 7s ease-in-out infinite;">
-      <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=520&h=360&fit=crop&auto=format" style="border-radius:16px;border:2px solid rgba(56,189,248,0.4);box-shadow:0 8px 40px rgba(0,0,0,0.6);display:block;width:210px;" onerror="this.style.display='none'">
-    </div>
-    <div style="position:absolute;left:5%;bottom:15%;transform:rotate(4deg);z-index:2;animation:floatB 8s ease-in-out infinite;">
-      <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=480&h=320&fit=crop&auto=format" style="border-radius:16px;border:2px solid rgba(129,140,248,0.4);box-shadow:0 8px 40px rgba(0,0,0,0.6);display:block;width:190px;" onerror="this.style.display='none'">
-    </div>
-    <div style="position:absolute;right:3%;bottom:18%;transform:rotate(-4deg);z-index:2;animation:floatA 9s ease-in-out infinite;">
-      <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=480&h=320&fit=crop&auto=format" style="border-radius:16px;border:2px solid rgba(129,140,248,0.4);box-shadow:0 8px 40px rgba(0,0,0,0.6);display:block;width:190px;" onerror="this.style.display='none'">
+    <div class="float-photo" style="position:absolute;left:2%;bottom:10%;transform:rotate(5deg);z-index:2;animation:floatB 8s ease-in-out infinite;">
+      <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=400&fit=crop&auto=format" class="hero-photo" style="width:240px;border:2px solid rgba(129,140,248,0.5);" onerror="this.parentElement.style.display='none'">
     </div>
 
-    <style>
-      @keyframes floatA{0%,100%{transform:rotate(-5deg) translateY(0);}50%{transform:rotate(-5deg) translateY(-14px);}}
-      @keyframes floatB{0%,100%{transform:rotate(5deg) translateY(0);}50%{transform:rotate(5deg) translateY(-10px);}}
-    </style>
+    <!-- Floating photos — RIGHT -->
+    <div class="float-photo" style="position:absolute;right:3%;top:10%;transform:rotate(6deg);z-index:2;animation:floatB 7s ease-in-out infinite;">
+      <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=700&h=480&fit=crop&auto=format" class="hero-photo" style="width:280px;border:2px solid rgba(56,189,248,0.5);" onerror="this.parentElement.style.display='none'">
+    </div>
+    <div class="float-photo" style="position:absolute;right:2%;bottom:10%;transform:rotate(-5deg);z-index:2;animation:floatA 9s ease-in-out infinite;">
+      <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=400&fit=crop&auto=format" class="hero-photo" style="width:240px;border:2px solid rgba(129,140,248,0.5);" onerror="this.parentElement.style.display='none'">
+    </div>
 
     <!-- Center content -->
-    <div style="position:relative;z-index:3;text-align:center;max-width:680px;">
-      <div class="nav-badge mb-lg" style="display:inline-flex;"><span class="dot"></span> Registration Now Open</div>
-      <h1 class="display mb-md">Where Innovation<br><span class="accent">Meets Community</span></h1>
-      <p class="subtext mb-xl" style="max-width:520px;margin:0 auto 2rem;">The Philippines&#39; premier technology event series &#8212; conferences, workshops, and summits designed to connect and inspire the next generation of tech leaders.</p>
-      <div class="flex gap-md justify-center">
+    <div style="position:relative;z-index:3;text-align:center;max-width:640px;">
+      
+      <h1 class="display mb-md" style="font-size:clamp(3rem,7vw,5.5rem);line-height:1.05;letter-spacing:-0.03em;font-weight:900;">Where Innovation<br><span class="accent">Meets Community</span></h1>
+      <p class="subtext mb-xl" style="max-width:480px;margin:0 auto 2.5rem;font-size:1.1rem;line-height:1.85;font-weight:300;color:rgba(148,163,184,0.9);">The Philippines&#39; premier technology event series — conferences, workshops, and summits built to connect and inspire the next generation of tech leaders.</p>
+      <div class="flex gap-md justify-center" style="flex-wrap:wrap;">
         <button class="btn btn-primary btn-lg" onclick="showPage('events');setActive(document.querySelectorAll('.nav-link')[1])">Browse Events &#8594;</button>
         <button class="btn btn-secondary btn-lg" onclick="showPage('signup');setActive(null)">Create Account</button>
       </div>
     </div>
 
     <!-- Stats bar -->
-    <div style="position:relative;z-index:3;display:flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:1.25rem 2rem;margin-top:3rem;flex-wrap:wrap;justify-content:center;gap:0;">
-      <div style="text-align:center;padding:0 2rem;">
-        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--cyan);">5+</div>
+    <div class="stats-bar" style="position:relative;z-index:3;display:flex;align-items:center;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;padding:1.5rem 2.5rem;margin-top:4rem;flex-wrap:wrap;justify-content:center;gap:0;backdrop-filter:blur(10px);">
+      <div style="text-align:center;padding:0 2.5rem;">
+        <div style="font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:var(--cyan);">5+</div>
         <div class="label">Events This Year</div>
       </div>
-      <div style="width:1px;height:40px;background:var(--border);"></div>
-      <div style="text-align:center;padding:0 2rem;">
-        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--violet);">1,800+</div>
+      <div class="divider" style="width:1px;height:44px;background:var(--border);"></div>
+      <div style="text-align:center;padding:0 2.5rem;">
+        <div style="font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:var(--violet);">1,800+</div>
         <div class="label">Total Seats</div>
       </div>
-      <div style="width:1px;height:40px;background:var(--border);"></div>
-      <div style="text-align:center;padding:0 2rem;">
-        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--success);">Free</div>
+      <div class="divider" style="width:1px;height:44px;background:var(--border);"></div>
+      <div style="text-align:center;padding:0 2.5rem;">
+        <div style="font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:var(--success);">Free</div>
         <div class="label">All Tickets</div>
       </div>
-      <div style="width:1px;height:40px;background:var(--border);"></div>
-      <div style="text-align:center;padding:0 2rem;">
-        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--gold);">PH</div>
+      <div class="divider" style="width:1px;height:44px;background:var(--border);"></div>
+      <div style="text-align:center;padding:0 2.5rem;">
+        <div style="font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:var(--gold);">🇵🇭</div>
         <div class="label">Metro Manila</div>
       </div>
     </div>
