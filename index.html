@@ -678,15 +678,7 @@ footer{padding:3rem;border-top:1px solid var(--border);}
     <p class="subtext mb-xl">Fill in your details. Your QR ticket will be generated instantly.</p>
     <div class="card glow">
       <div id="reg-alert" class="hidden"></div>
-      <div class="form-group mb-lg">
-        <label class="form-label">Ticket Type</label>
-        <div class="tab-bar" id="ticket-type-tabs">
-          <button class="tab-item active" onclick="selectTicketType(this,'General')">🎟️ General<br><small id="price-general">₱1,500</small></button>
-          <button class="tab-item" onclick="selectTicketType(this,'VIP')">👑 VIP<br><small id="price-vip">₱3,500</small></button>
-          <button class="tab-item" onclick="selectTicketType(this,'Student')">🎓 Student<br><small id="price-student">₱750</small></button>
-        </div>
-        <input type="hidden" id="selected-type" value="General">
-      </div>
+      <input type="hidden" id="selected-type" value="General">
       <div class="form-row col2 mb-md">
         <div class="form-group" style="margin-bottom:0;"><label class="form-label">First Name *</label><div class="input-wrap"><span class="icon">👤</span><input type="text" id="reg-firstname" placeholder="Juan"></div></div>
         <div class="form-group" style="margin-bottom:0;"><label class="form-label">Last Name *</label><div class="input-wrap"><span class="icon">👤</span><input type="text" id="reg-lastname" placeholder="Dela Cruz"></div></div>
@@ -702,13 +694,9 @@ footer{padding:3rem;border-top:1px solid var(--border);}
       </div>
       <div class="form-row col2 mb-md">
         <div class="form-group" style="margin-bottom:0;"><label class="form-label">Dietary</label><div class="input-wrap"><span class="icon">🍽️</span><select id="reg-dietary" style="padding-left:2.8rem;"><option value="None">None</option><option>Vegetarian</option><option>Vegan</option><option>Halal</option><option>Gluten-free</option></select></div></div>
-        <div class="form-group hidden" id="student-fields" style="margin-bottom:0;"><label class="form-label">Student ID *</label><div class="input-wrap"><span class="icon">🎓</span><input type="text" id="reg-studentid" placeholder="2021-XXXXX"></div></div>
       </div>
       <div class="form-group mb-xl"><label class="form-label">Notes</label><textarea id="reg-notes" placeholder="Special requests, accessibility needs..."></textarea></div>
-      <div class="flex justify-between items-center">
-        <div><div class="label">Total</div><div style="font-family:var(--font-head);font-size:1.6rem;font-weight:900;color:var(--cyan);" id="price-display">₱1,500</div></div>
-        <button class="btn btn-primary btn-lg" onclick="submitRegistration()">Register & Get Ticket →</button>
-      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="submitRegistration()">Register & Get Ticket →</button>
     </div>
   </div>
 </div>
@@ -744,7 +732,7 @@ footer{padding:3rem;border-top:1px solid var(--border);}
     <div id="ticket-display"></div>
     <div class="flex gap-sm mt-md justify-center">
       <button class="btn btn-secondary" onclick="window.print()">🖨 Print</button>
-      <button class="btn btn-primary" onclick="closeModal()">Done ✓</button>
+      <button class="btn btn-primary" onclick="closeModal();showPage('home');setActive(document.querySelectorAll('.nav-link')[0])">Done ✓</button>
     </div>
   </div>
 </div>
@@ -874,6 +862,15 @@ function userLogout() {
   sessionStorage.removeItem('synapse_user_token');
   sessionStorage.removeItem('synapse_user');
   updateNavUser();
+  // Clear login/signup forms so re-login works cleanly
+  ['login-email','login-password','signup-email','signup-password','signup-firstname','signup-lastname'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['login-alert','signup-alert'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.add('hidden'); el.textContent = ''; }
+  });
   showPage('home');
 }
 
@@ -978,24 +975,12 @@ function openEventRegistration(eventId) {
     </div>
   `;
 
-  document.getElementById('price-general').textContent = '₱' + Number(event.priceGeneral).toLocaleString();
-  document.getElementById('price-vip').textContent = '₱' + Number(event.priceVIP).toLocaleString();
-  document.getElementById('price-student').textContent = '₱' + Number(event.priceStudent).toLocaleString();
-  document.getElementById('price-display').textContent = '₱' + Number(event.priceGeneral).toLocaleString();
-  document.getElementById('selected-type').value = 'General';
-  document.querySelectorAll('#ticket-type-tabs .tab-item').forEach((t,i) => t.classList[i===0?'add':'remove']('active'));
   if (currentUser) document.getElementById('reg-email').value = currentUser.email || '';
   showPage('register');
 }
 
 // ── Registration ──
-function selectTicketType(el, type) {
-  document.querySelectorAll('#ticket-type-tabs .tab-item').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('selected-type').value = type;
-  document.getElementById('price-display').textContent = '₱' + Number(currentEventPrices[type]).toLocaleString();
-  document.getElementById('student-fields').classList[type === 'Student' ? 'remove' : 'add']('hidden');
-}
+
 
 async function submitRegistration() {
   const fn = document.getElementById('reg-firstname').value.trim();
@@ -1017,7 +1002,7 @@ async function submitRegistration() {
     alertEl.classList.remove('hidden');
     return;
   }
-  if (type === 'Student' && !document.getElementById('reg-studentid').value.trim()) {
+  if (type === 'Student' && !document.getElementById('reg-studentid')?.value.trim()) {
     alertEl.className = 'alert alert-error';
     alertEl.textContent = '⚠️ Student ID is required for Student rate.';
     alertEl.classList.remove('hidden');
@@ -1037,14 +1022,14 @@ async function submitRegistration() {
       session: document.getElementById('reg-session').value,
       dietary: document.getElementById('reg-dietary').value,
       notes: document.getElementById('reg-notes').value.trim(),
-      studentId: document.getElementById('reg-studentid').value.trim(),
-      type, price: currentEventPrices[type], status: 'Registered',
+      studentId: '',
+      type: 'General', price: 0, status: 'Registered',
       eventId: selectedEventId,
       userId: currentUser ? currentUser.id : null
     };
     const ticket = await apiFetch('/registrations', { method: 'POST', body: JSON.stringify(payload) });
     ticket.event = allEvents.find(e => e.id === selectedEventId);
-    ['reg-firstname','reg-lastname','reg-email','reg-phone','reg-org','reg-designation','reg-notes','reg-studentid'].forEach(id => {
+    ['reg-firstname','reg-lastname','reg-email','reg-phone','reg-org','reg-designation','reg-notes'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
