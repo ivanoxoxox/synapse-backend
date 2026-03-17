@@ -4,734 +4,601 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Synapse Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#0a0e1a;--card:#1a2340;--panel:#111827;--border:rgba(99,179,237,0.15);--border-hi:rgba(99,179,237,0.4);--cyan:#38bdf8;--cyan-glow:rgba(56,189,248,0.2);--violet:#818cf8;--violet-soft:rgba(129,140,248,0.15);--text-hi:#f0f6ff;--text-mid:#94a3b8;--text-lo:#475569;--success:#10b981;--danger:#ef4444;--gold:#fbbf24;--warning:#f59e0b;--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;--radius:12px;--radius-lg:20px;--shadow:0 4px 24px rgba(0,0,0,0.4);--glow:0 0 30px rgba(56,189,248,0.15);}
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:var(--font-body);background:var(--navy);color:var(--text-hi);min-height:100vh;display:flex;}
-  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 800px 600px at 10% 20%,rgba(56,189,248,0.04) 0%,transparent 70%);pointer-events:none;z-index:0;}
+:root {
+  --navy:#080c18;--card:#111827;--card-hi:#161f32;
+  --border:rgba(99,179,237,0.12);--border-hi:rgba(99,179,237,0.35);
+  --cyan:#38bdf8;--cyan-glow:rgba(56,189,248,0.15);
+  --violet:#818cf8;--gold:#fbbf24;
+  --text-hi:#f0f6ff;--text-mid:#94a3b8;--text-lo:#475569;
+  --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+  --font-head:'Outfit',sans-serif;--font-body:'Plus Jakarta Sans',sans-serif;
+  --radius:10px;--radius-lg:16px;--sidebar:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-body);background:var(--navy);color:var(--text-hi);min-height:100vh;}
 
-  /* SIDEBAR */
-  .sidebar{width:240px;min-height:100vh;background:rgba(10,14,26,0.95);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;padding:1.5rem 1rem;}
-  .sidebar-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-size:1.2rem;font-weight:800;color:var(--text-hi);margin-bottom:2rem;padding:0 0.5rem;}
-  .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--cyan),var(--violet));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-  .sidebar-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-lo);padding:0 0.5rem;margin-bottom:0.5rem;margin-top:1rem;}
-  .sidebar-link{display:flex;align-items:center;gap:10px;padding:0.65rem 0.75rem;border-radius:10px;color:var(--text-mid);cursor:pointer;border:none;background:transparent;font-family:var(--font-body);font-size:0.875rem;font-weight:500;width:100%;text-align:left;transition:all 0.2s;}
-  .sidebar-link:hover{color:var(--text-hi);background:rgba(255,255,255,0.05);}
-  .sidebar-link.active{color:var(--cyan);background:var(--cyan-glow);}
-  .sidebar-link .icon{font-size:1rem;width:20px;text-align:center;}
-  .sidebar-bottom{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border);}
-  .user-info{padding:0.75rem;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border);}
-  .user-name{font-size:0.875rem;font-weight:600;color:var(--text-hi);}
-  .user-role{font-size:0.72rem;color:var(--text-lo);}
+/* LOGIN */
+#login-screen{position:fixed;inset:0;z-index:1000;background:var(--navy);display:flex;align-items:center;justify-content:center;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;width:100%;max-width:420px;box-shadow:0 8px 48px rgba(0,0,0,0.6);}
+.login-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-size:1.4rem;font-weight:800;margin-bottom:0.5rem;}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--cyan),var(--violet));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
 
-  /* MAIN */
-  .main{margin-left:240px;flex:1;position:relative;z-index:1;}
-  .topbar{height:64px;background:rgba(10,14,26,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:50;}
-  .topbar-title{font-family:var(--font-head);font-size:1.1rem;font-weight:700;}
-  .content{padding:2rem;}
+/* LAYOUT */
+#app{display:none;min-height:100vh;}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
+.sidebar-header{padding:1.5rem;border-bottom:1px solid var(--border);}
+.sidebar-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-size:1.2rem;font-weight:800;}
+.sidebar-nav{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.sidebar-link{display:flex;align-items:center;gap:12px;padding:0.75rem 1rem;border-radius:var(--radius);border:none;background:transparent;color:var(--text-mid);font-family:var(--font-body);font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s;text-align:left;width:100%;}
+.sidebar-link:hover{background:rgba(255,255,255,0.05);color:var(--text-hi);}
+.sidebar-link.active{background:var(--cyan-glow);color:var(--cyan);font-weight:600;}
+.sidebar-footer{padding:1rem 0.75rem;border-top:1px solid var(--border);}
+.main{margin-left:var(--sidebar);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(8,12,24,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-title{font-family:var(--font-head);font-size:1.1rem;font-weight:700;}
+.content{flex:1;padding:2rem;}
 
-  /* PANELS */
-  .panel{display:none;}.panel.active{display:block;}
+/* PANELS */
+.panel{display:none;animation:fadeIn 0.2s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
-  /* CARDS */
-  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;box-shadow:var(--shadow);}
-  .card.glow{box-shadow:var(--shadow),var(--glow);}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;}
 
-  /* BUTTONS */
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0.7rem 1.5rem;border:none;border-radius:10px;font-family:var(--font-body);font-size:0.875rem;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;text-decoration:none;}
-  .btn-primary{background:var(--cyan);color:#000;}.btn-primary:hover{background:#7dd3fc;}
-  .btn-secondary{background:rgba(255,255,255,0.08);color:var(--text-hi);border:1px solid var(--border);}.btn-secondary:hover{background:rgba(255,255,255,0.13);}
-  .btn-danger{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);}.btn-danger:hover{background:rgba(239,68,68,0.25);}
-  .btn-success{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25);}.btn-success:hover{background:rgba(16,185,129,0.25);}
-  .btn-ghost{background:transparent;color:var(--text-mid);border:1px solid var(--border);}.btn-ghost:hover{color:var(--text-hi);background:rgba(255,255,255,0.05);}
-  .btn-full{width:100%;}.btn-lg{padding:0.9rem 2rem;font-size:1rem;}.btn-sm{padding:0.4rem 0.9rem;font-size:0.78rem;}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--c,var(--cyan));}
+.stat-icon{font-size:1.75rem;margin-bottom:0.75rem;}
+.stat-val{font-family:var(--font-head);font-size:2rem;font-weight:900;line-height:1;}
+.stat-label{font-size:0.8rem;color:var(--text-mid);margin-top:4px;}
 
-  /* FORMS */
-  .form-group{margin-bottom:1.25rem;}
-  .form-label{display:block;font-size:0.78rem;font-weight:600;color:var(--text-mid);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;}
-  .form-row{display:grid;gap:1rem;}.form-row.col2{grid-template-columns:1fr 1fr;}.form-row.col3{grid-template-columns:1fr 1fr 1fr;}
-  .input-wrap{position:relative;}.input-wrap .icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:0.9rem;pointer-events:none;}
-  input,select,textarea{width:100%;padding:0.65rem 0.9rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-hi);font-family:var(--font-body);font-size:0.875rem;transition:border-color 0.2s;-webkit-appearance:none;}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan);background:rgba(56,189,248,0.05);}
-  select option{background:#1a2340;}
-  textarea{resize:vertical;min-height:80px;}
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:0.875rem;}
+thead{background:rgba(255,255,255,0.03);}
+th{padding:0.85rem 1rem;text-align:left;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-lo);white-space:nowrap;border-bottom:1px solid var(--border);}
+td{padding:0.85rem 1rem;border-bottom:1px solid rgba(99,179,237,0.06);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
 
-  /* ALERTS */
-  .alert{padding:0.9rem 1.2rem;border-radius:10px;font-size:0.875rem;margin-bottom:1rem;}
-  .alert-error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;}
-  .alert-success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#10b981;}
-  .alert-info{background:var(--cyan-glow);border:1px solid var(--border-hi);color:var(--cyan);}
-  .alert-warning{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:var(--warning);}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0.65rem 1.25rem;border:none;border-radius:8px;font-family:var(--font-body);font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.btn-primary{background:var(--cyan);color:#000;}.btn-primary:hover{background:#7dd3fc;}
+.btn-secondary{background:rgba(255,255,255,0.07);color:var(--text-hi);border:1px solid var(--border);}.btn-secondary:hover{background:rgba(255,255,255,0.12);}
+.btn-ghost{background:transparent;color:var(--text-mid);border:1px solid var(--border);}.btn-ghost:hover{color:var(--text-hi);}
+.btn-danger{background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.25);}.btn-danger:hover{background:rgba(239,68,68,0.22);}
+.btn-success{background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.25);}.btn-success:hover{background:rgba(16,185,129,0.22);}
+.btn-sm{padding:0.35rem 0.75rem;font-size:0.78rem;}
+.btn-lg{padding:0.85rem 2rem;font-size:0.95rem;}
 
-  /* STATS */
-  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
-  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;display:flex;flex-direction:column;gap:6px;}
-  .stat-card.c1{border-top:3px solid var(--cyan);}.stat-card.c2{border-top:3px solid var(--gold);}.stat-card.c3{border-top:3px solid var(--success);}.stat-card.c4{border-top:3px solid var(--violet);}
-  .stat-icon{font-size:1.4rem;}.stat-val{font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--text-hi);}.stat-label{font-size:0.78rem;color:var(--text-mid);}
+/* FORMS */
+.form-group{margin-bottom:1rem;}
+.form-label{display:block;font-size:0.75rem;font-weight:700;color:var(--text-mid);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;}
+.form-row{display:grid;gap:1rem;}
+.form-row.col2{grid-template-columns:1fr 1fr;}
+.form-row.col3{grid-template-columns:1fr 1fr 1fr;}
+input,select,textarea{width:100%;padding:0.65rem 1rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-hi);font-family:var(--font-body);font-size:0.875rem;transition:all 0.2s;-webkit-appearance:none;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan);background:rgba(56,189,248,0.05);}
+select option{background:#1a2340;}
+textarea{resize:vertical;min-height:70px;}
 
-  /* TABLE */
-  .table-wrap{overflow-x:auto;}
-  table{width:100%;border-collapse:collapse;font-size:0.875rem;}
-  thead tr{border-bottom:1px solid var(--border);}
-  th{padding:0.75rem 1rem;text-align:left;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-lo);white-space:nowrap;}
-  td{padding:0.85rem 1rem;border-bottom:1px solid rgba(99,179,237,0.07);color:var(--text-mid);vertical-align:middle;}
-  tbody tr:hover{background:rgba(56,189,248,0.03);}
-  tbody tr:last-child td{border-bottom:none;}
+/* ALERTS */
+.alert{padding:0.85rem 1.1rem;border-radius:8px;font-size:0.875rem;margin-bottom:1rem;}
+.alert-error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;}
+.alert-success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#10b981;}
+.alert-info{background:var(--cyan-glow);border:1px solid var(--border-hi);color:var(--cyan);}
 
-  /* BADGES */
-  .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;white-space:nowrap;}
-  .badge-cyan{background:var(--cyan-glow);border:1px solid var(--border-hi);color:var(--cyan);}
-  .badge-gold{background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);color:var(--gold);}
-  .badge-violet{background:var(--violet-soft);border:1px solid rgba(129,140,248,0.3);color:var(--violet);}
-  .badge-green{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:var(--success);}
-  .badge-orange{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:var(--warning);}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:0.7rem;font-weight:700;white-space:nowrap;}
+.badge-cyan{background:var(--cyan-glow);border:1px solid var(--border-hi);color:var(--cyan);}
+.badge-green{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);color:var(--success);}
+.badge-gray{background:rgba(100,100,100,0.12);border:1px solid rgba(100,100,100,0.2);color:var(--text-lo);}
 
-  /* EVENT CARDS (admin) */
-  .event-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
-  .event-admin-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color 0.2s;}
-  .event-admin-card:hover{border-color:var(--border-hi);}
-  .event-admin-banner{height:6px;}
-  .event-admin-body{padding:1.25rem;}
-  .event-admin-title{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--text-hi);margin-bottom:4px;}
-  .event-admin-meta{font-size:0.8rem;color:var(--text-mid);margin-bottom:1rem;}
-  .event-admin-footer{display:flex;gap:0.5rem;flex-wrap:wrap;}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 48px rgba(0,0,0,0.6);animation:fadeIn 0.2s ease;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+.modal-close{background:none;border:none;color:var(--text-lo);font-size:1.3rem;cursor:pointer;}.modal-close:hover{color:var(--text-hi);}
 
-  /* MODAL */
-  .modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:1rem;}
-  .modal-overlay.show{display:flex;}
-  .modal{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 48px rgba(0,0,0,0.6);animation:modal-in 0.2s ease;}
-  @keyframes modal-in{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
-  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
-  .modal-close{background:none;border:none;color:var(--text-lo);font-size:1.3rem;cursor:pointer;}
-  .modal-close:hover{color:var(--text-hi);}
+/* SCANNER */
+.scanner-box{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center;}
+.scan-result{padding:1.25rem;border-radius:12px;margin-top:1rem;}
+.scan-result.ok{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);}
+.scan-result.err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);}
+.scan-log-item{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;border-bottom:1px solid var(--border);font-size:0.85rem;}
+.scan-log-item:last-child{border-bottom:none;}
 
-  /* LOGIN */
-  #login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:200;padding:1rem;}
-  #login-screen::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 800px 600px at 50% 50%,rgba(56,189,248,0.06) 0%,transparent 70%);pointer-events:none;}
+/* SECTION HDR */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap;}
+.section-hdr h2{font-family:var(--font-head);font-size:1.2rem;font-weight:700;}
+.search-bar{padding:0.6rem 1rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--text-hi);font-family:var(--font-body);font-size:0.875rem;min-width:220px;}
+.search-bar:focus{outline:none;border-color:var(--cyan);}
 
-  /* SCAN */
-  .scan-viewfinder{width:100%;max-width:300px;aspect-ratio:1;border-radius:12px;background:linear-gradient(135deg,#0b1428,#0e1a30);border:2px dashed var(--border-hi);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;margin:0 auto 1.5rem;}
-  @keyframes scan-move{0%{top:20px;}50%{top:calc(100% - 22px);}100%{top:20px;}}
+/* UTILS */
+.flex{display:flex;}.items-center{align-items:center;}.justify-between{justify-content:space-between;}.gap-sm{gap:0.75rem;}.gap-md{gap:1rem;}.mt-md{margin-top:1rem;}.mt-lg{margin-top:1.5rem;}.mb-md{margin-bottom:1rem;}.mb-lg{margin-bottom:1.5rem;}.hidden{display:none!important;}.text-center{text-align:center;}.w-full{width:100%;}.flex-wrap{flex-wrap:wrap;}
+.eyebrow{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-lo);margin-bottom:4px;}
 
-  /* UTILITIES */
-  .flex{display:flex;}.items-center{align-items:center;}.justify-between{justify-content:space-between;}.justify-center{justify-content:center;}
-  .gap-xs{gap:0.5rem;}.gap-sm{gap:0.75rem;}.gap-md{gap:1rem;}
-  .mb-xs{margin-bottom:0.5rem;}.mb-sm{margin-bottom:0.75rem;}.mb-md{margin-bottom:1rem;}.mb-lg{margin-bottom:1.5rem;}.mb-xl{margin-bottom:2rem;}
-  .mt-xs{margin-top:0.5rem;}.mt-sm{margin-top:0.75rem;}.mt-md{margin-top:1rem;}
-  .w-full{width:100%;}.text-center{text-align:center;}.hidden{display:none!important;}
-  .heading{font-family:var(--font-head);font-size:1.4rem;font-weight:700;}
-  .subtext{color:var(--text-mid);font-size:0.9rem;line-height:1.6;}
-  .label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-lo);}
-  .caption{font-size:0.8rem;color:var(--text-mid);}
-  .separator{height:1px;background:var(--border);margin:1.5rem 0;}
-  ::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:rgba(99,179,237,0.2);border-radius:3px;}
-  @media(max-width:768px){.sidebar{transform:translateX(-100%);}.main{margin-left:0;}.stats-grid{grid-template-columns:1fr 1fr;}.form-row.col2,.form-row.col3{grid-template-columns:1fr;}}
+@media(max-width:768px){.stats-row{grid-template-columns:1fr 1fr;}.form-row.col2,.form-row.col3{grid-template-columns:1fr;}}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(99,179,237,0.2);border-radius:3px;}
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN SCREEN ═══ -->
+<!-- LOGIN -->
 <div id="login-screen">
-  <div style="width:100%;max-width:400px;position:relative;z-index:1;">
-    <div class="text-center mb-xl">
-      <div style="width:52px;height:52px;background:linear-gradient(135deg,var(--cyan),var(--violet));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 1rem;">⚡</div>
-      <h1 style="font-family:var(--font-head);font-size:1.5rem;font-weight:800;">Synapse Admin</h1>
-      <p class="subtext mt-xs">Restricted access. Authorized personnel only.</p>
+  <div class="login-box">
+    <div class="login-logo"><div class="logo-icon">⚡</div>Synapse Admin</div>
+    <p style="color:var(--text-mid);font-size:0.875rem;margin-bottom:1.75rem;">Sign in to access the dashboard.</p>
+    <div id="login-err" class="hidden"></div>
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" id="admin-user" placeholder="admin" onkeypress="if(event.key==='Enter')adminLogin()">
     </div>
-    <div class="card glow">
-      <div id="login-err" class="hidden"></div>
-      <div class="form-group mb-md">
-        <label class="form-label">Username</label>
-        <input type="text" id="admin-user" placeholder="admin">
-      </div>
-      <div class="form-group mb-lg">
-        <label class="form-label">Password</label>
-        <input type="password" id="admin-pass" placeholder="••••••••" onkeypress="if(event.key==='Enter') adminLogin()">
-      </div>
-      <button class="btn btn-primary btn-full btn-lg" onclick="adminLogin()">Sign In →</button>
+    <div class="form-group" style="margin-bottom:1.5rem;">
+      <label class="form-label">Password</label>
+      <input type="password" id="admin-pass" placeholder="••••••••" onkeypress="if(event.key==='Enter')adminLogin()">
     </div>
-    <p class="caption text-center mt-md"><a href="index.html" style="color:var(--cyan);text-decoration:none;">← Back to public site</a></p>
+    <button class="btn btn-primary w-full btn-lg" onclick="adminLogin()">Sign In →</button>
+    <p style="text-align:center;margin-top:1.25rem;font-size:0.82rem;color:var(--text-lo);">
+      <a href="index.html" style="color:var(--cyan);text-decoration:none;">← Back to Synapse</a>
+    </p>
   </div>
 </div>
 
-<!-- ═══ SIDEBAR ═══ -->
-<aside class="sidebar" id="sidebar" style="display:none;">
-  <div class="sidebar-brand">
-    <div class="logo-icon">⚡</div>
-    <span>Synapse <span style="color:var(--cyan);">Admin</span></span>
-  </div>
-
-  <div class="sidebar-label">Main</div>
-  <button class="sidebar-link active" onclick="showPanel('dashboard',this)">
-    <span class="icon">📊</span> Dashboard
-  </button>
-  <button class="sidebar-link" onclick="showPanel('events',this)">
-    <span class="icon">🗓️</span> Events
-  </button>
-  <button class="sidebar-link" onclick="showPanel('registrations',this)">
-    <span class="icon">👥</span> Registrations
-  </button>
-  <button class="sidebar-link" onclick="showPanel('scanner',this)">
-    <span class="icon">📷</span> QR Scanner
-  </button>
-
-  <div class="sidebar-bottom">
-    <div class="user-info mb-sm">
-      <div class="user-name">Admin</div>
-      <div class="user-role">Full Access</div>
+<!-- APP -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand"><div class="logo-icon" style="width:32px;height:32px;font-size:16px;">⚡</div>Synapse</div>
+      <div style="font-size:0.7rem;color:var(--text-lo);margin-top:4px;margin-left:42px;">Admin Panel</div>
     </div>
-    <button class="sidebar-link" onclick="adminLogout()" style="color:var(--danger);">
-      <span class="icon">🚪</span> Sign Out
-    </button>
-  </div>
-</aside>
-
-<!-- ═══ MAIN CONTENT ═══ -->
-<main class="main" id="main-content" style="display:none;">
-
-  <!-- Topbar -->
-  <div class="topbar">
-    <div class="topbar-title" id="topbar-title">Dashboard</div>
-    <div class="flex gap-sm items-center">
-      <div style="display:flex;align-items:center;gap:6px;padding:0.35rem 0.85rem;background:var(--cyan-glow);border:1px solid var(--border-hi);border-radius:20px;font-size:0.8rem;font-weight:600;color:var(--cyan);">
-        <div style="width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse-dot 2s infinite;"></div>
-        Live
-      </div>
-      @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:0.5;}}
+    <div class="sidebar-nav">
+      <button class="sidebar-link active" onclick="showPanel('dashboard',this)"><span style="width:20px;text-align:center;">📊</span> Dashboard</button>
+      <button class="sidebar-link" onclick="showPanel('registrations',this)"><span style="width:20px;text-align:center;">👥</span> Registrations</button>
+      <button class="sidebar-link" onclick="showPanel('events',this)"><span style="width:20px;text-align:center;">🗓️</span> Events</button>
+      <button class="sidebar-link" onclick="showPanel('scanner',this)"><span style="width:20px;text-align:center;">📷</span> QR Scanner</button>
+    </div>
+    <div class="sidebar-footer">
+      <button class="sidebar-link w-full" onclick="adminLogout()"><span style="width:20px;text-align:center;">🚪</span> Sign Out</button>
+      <a href="index.html" style="display:flex;align-items:center;gap:12px;padding:0.75rem 1rem;color:var(--text-lo);font-size:0.875rem;text-decoration:none;border-radius:var(--radius);transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''">
+        <span style="width:20px;text-align:center;">🌐</span> View Site
+      </a>
     </div>
   </div>
 
-  <div class="content">
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">Synapse Admin</div>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+      </div>
+      <div class="flex items-center gap-sm">
+        <span style="font-size:0.82rem;color:var(--text-mid);">👤 admin</span>
+        <button class="btn btn-ghost btn-sm" onclick="refreshCurrent()">↺ Refresh</button>
+      </div>
+    </div>
 
-    <!-- ═══ DASHBOARD PANEL ═══ -->
-    <div class="panel active" id="panel-dashboard">
-      <div class="flex justify-between items-center mb-xl">
-        <div>
-          <div class="label mb-xs">Overview</div>
-          <h1 class="heading">Synapse Dashboard</h1>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-row">
+          <div class="stat-card" style="--c:#38bdf8;"><div class="stat-icon">👥</div><div class="stat-val" id="stat-total">—</div><div class="stat-label">Total Registrations</div></div>
+          <div class="stat-card" style="--c:#10b981;"><div class="stat-icon">✅</div><div class="stat-val" id="stat-checkedin">—</div><div class="stat-label">Checked In</div></div>
+          <div class="stat-card" style="--c:#fbbf24;"><div class="stat-icon">🗓️</div><div class="stat-val" id="stat-events">—</div><div class="stat-label">Total Events</div></div>
+          <div class="stat-card" style="--c:#818cf8;"><div class="stat-icon">🔵</div><div class="stat-val" id="stat-active">—</div><div class="stat-label">Active Events</div></div>
         </div>
-        <div class="flex gap-sm">
-          <button class="btn btn-secondary btn-sm" onclick="exportCSV()">↓ Export CSV</button>
-          <button class="btn btn-ghost btn-sm" onclick="loadDashboard()">↺ Refresh</button>
+        <div class="card">
+          <div class="section-hdr">
+            <h2>Recent Registrations</h2>
+            <button class="btn btn-ghost btn-sm" onclick="showPanel('registrations',document.querySelectorAll('.sidebar-link')[1])">View All →</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Event</th><th>Status</th><th>Date</th></tr></thead>
+              <tbody id="dash-tbody"><tr><td colspan="5" class="text-center" style="padding:2rem;color:var(--text-lo);">Loading...</td></tr></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card c1"><div class="stat-icon">👥</div><div class="stat-val" id="stat-total">0</div><div class="stat-label">Total Registrants</div></div>
-        <div class="stat-card c2"><div class="stat-icon">📅</div><div class="stat-val" id="stat-vip">0</div><div class="stat-label">Registered Today</div></div>
-        <div class="stat-card c3"><div class="stat-icon">✅</div><div class="stat-val" id="stat-checked">0</div><div class="stat-label">Checked In</div></div>
-        <div class="stat-card c4"><div class="stat-icon">💰</div><div class="stat-val" id="stat-revenue">₱0</div><div class="stat-label">Total Revenue</div></div>
-      </div>
-
-      <div class="card" style="padding:0;overflow:hidden;">
-        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-          <div style="font-family:var(--font-head);font-size:1rem;font-weight:700;">Recent Registrations</div>
-          <button class="btn btn-ghost btn-sm" onclick="showPanel('registrations',document.querySelectorAll('.sidebar-link')[2])">View All</button>
+      <!-- REGISTRATIONS -->
+      <div class="panel" id="panel-registrations">
+        <div class="section-hdr">
+          <h2>All Registrations</h2>
+          <div class="flex gap-sm items-center flex-wrap">
+            <input class="search-bar" id="reg-search" type="text" placeholder="🔍 Search name, email, ID..." oninput="filterRegs(this.value)">
+            <select class="search-bar" id="event-filter" onchange="filterRegs(document.getElementById('reg-search').value)" style="min-width:180px;">
+              <option value="">All Events</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="loadRegistrations()">↺</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV()">⬇ CSV</button>
+          </div>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Ticket ID</th><th>Name</th><th>Event</th><th>Type</th><th>Status</th></tr></thead>
-            <tbody id="recent-tbody"><tr><td colspan="5" class="text-center" style="padding:2rem;color:var(--text-lo);">Loading...</td></tr></tbody>
+            <thead><tr><th>Ticket ID</th><th>Name</th><th>Email</th><th>Event</th><th>Org</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="reg-tbody"><tr><td colspan="8" class="text-center" style="padding:2rem;color:var(--text-lo);">Loading...</td></tr></tbody>
           </table>
         </div>
-      </div>
-    </div>
-
-    <!-- ═══ EVENTS PANEL ═══ -->
-    <div class="panel" id="panel-events">
-      <div class="flex justify-between items-center mb-xl">
-        <div><div class="label mb-xs">Manage</div><h1 class="heading">Events</h1></div>
-        <button class="btn btn-primary" onclick="openEventModal()">+ Create Event</button>
+        <div id="reg-count" style="margin-top:0.75rem;font-size:0.8rem;color:var(--text-lo);"></div>
       </div>
 
-      <div class="event-cards-grid" id="admin-events-grid">
-        <div class="card text-center" style="padding:2rem;color:var(--text-lo);">Loading events...</div>
-      </div>
-    </div>
-
-    <!-- ═══ REGISTRATIONS PANEL ═══ -->
-    <div class="panel" id="panel-registrations">
-      <div class="flex justify-between items-center mb-xl">
-        <div><div class="label mb-xs">All</div><h1 class="heading">Registrations</h1></div>
-        <button class="btn btn-secondary btn-sm" onclick="exportCSV()">↓ Export CSV</button>
-      </div>
-
-      <div class="flex gap-sm mb-md">
-        <input type="text" id="reg-search" placeholder="🔍 Search name, email, ticket ID..." oninput="renderRegTable()" style="flex:1;">
-        <select id="reg-filter-status" onchange="renderRegTable()" style="width:auto;min-width:130px;">
-          <option value="">All Status</option>
-          <option>Registered</option><option>Checked In</option>
-        </select>
-        <button class="btn btn-ghost btn-sm" onclick="loadRegistrations()">↺</button>
-      </div>
-
-      <div class="card" style="padding:0;overflow:hidden;">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Ticket ID</th><th>Full Name</th><th>Email</th><th>Event</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="reg-tbody"><tr><td colspan="8" class="text-center" style="padding:2.5rem;color:var(--text-lo);">Loading...</td></tr></tbody>
-          </table>
+      <!-- EVENTS -->
+      <div class="panel" id="panel-events">
+        <div class="section-hdr">
+          <h2>Events</h2>
+          <button class="btn btn-primary btn-sm" onclick="openEventModal()">+ New Event</button>
         </div>
+        <div id="events-list" style="display:grid;gap:1rem;"></div>
       </div>
-    </div>
 
-    <!-- ═══ SCANNER PANEL ═══ -->
-    <div class="panel" id="panel-scanner">
-      <div class="label mb-xs">Check-in</div>
-      <h1 class="heading mb-xs">QR Scanner</h1>
-      <p class="subtext mb-xl">Scan or enter a ticket ID to check in attendees.</p>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
-        <div class="card glow">
-          <div class="scan-viewfinder">
-            <div style="position:absolute;top:20px;left:20px;width:28px;height:28px;border-top:3px solid var(--cyan);border-left:3px solid var(--cyan);border-radius:3px 0 0 0;"></div>
-            <div style="position:absolute;top:20px;right:20px;width:28px;height:28px;border-top:3px solid var(--cyan);border-right:3px solid var(--cyan);border-radius:0 3px 0 0;"></div>
-            <div style="position:absolute;bottom:20px;left:20px;width:28px;height:28px;border-bottom:3px solid var(--cyan);border-left:3px solid var(--cyan);border-radius:0 0 0 3px;"></div>
-            <div style="position:absolute;bottom:20px;right:20px;width:28px;height:28px;border-bottom:3px solid var(--cyan);border-right:3px solid var(--cyan);border-radius:0 0 3px 0;"></div>
-            <div style="position:absolute;left:20px;right:20px;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:scan-move 2.5s ease-in-out infinite;"></div>
-            <div style="text-align:center;position:relative;z-index:2;">
-              <div style="font-size:2.5rem;margin-bottom:0.5rem;">📷</div>
-              <p class="caption">Camera scan coming soon</p>
+      <!-- SCANNER -->
+      <div class="panel" id="panel-scanner">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
+          <div class="scanner-box">
+            <div style="font-size:2.5rem;margin-bottom:0.75rem;">📷</div>
+            <h3 style="font-family:var(--font-head);font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">QR Check-in</h3>
+            <p style="font-size:0.875rem;color:var(--text-mid);margin-bottom:1.5rem;">Enter the ticket ID to check in an attendee.</p>
+            <div class="flex gap-sm mb-md">
+              <input type="text" id="scan-input" placeholder="Ticket ID..." onkeypress="if(event.key==='Enter')doScan()" style="flex:1;">
+              <button class="btn btn-primary" onclick="doScan()">Check In</button>
             </div>
+            <div id="scan-result"></div>
           </div>
-
-          <div class="form-group mb-md">
-            <label class="form-label">Enter Ticket ID manually</label>
-            <div class="flex gap-sm">
-              <input type="text" id="scan-input" placeholder="SNP-XXXXX" style="flex:1;" onkeypress="if(event.key==='Enter') scanTicket()">
-              <button class="btn btn-primary" onclick="scanTicket()">Check In</button>
+          <div class="card">
+            <div class="section-hdr">
+              <h2>Check-in Log</h2>
+              <span id="scan-badge" style="font-size:0.78rem;color:var(--success);font-weight:600;"></span>
             </div>
-          </div>
-          <div id="scan-result" class="hidden"></div>
-        </div>
-
-        <div>
-          <div class="flex justify-between items-center mb-md">
-            <div style="font-family:var(--font-head);font-size:1rem;font-weight:700;">Recent Check-ins</div>
-            <span class="badge badge-green" id="scan-count-badge">0 today</span>
-          </div>
-          <div class="card" style="padding:0;overflow:hidden;">
-            <div id="scan-log">
-              <div class="text-center" style="padding:2rem;color:var(--text-lo);"><p class="caption">No check-ins yet.</p></div>
+            <div id="scan-log" style="max-height:420px;overflow-y:auto;">
+              <div class="text-center" style="padding:2rem;color:var(--text-lo);font-size:0.875rem;">No check-ins yet.</div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
-</main>
+</div>
 
-<!-- ═══ EVENT MODAL ═══ -->
+<!-- EVENT MODAL -->
 <div class="modal-overlay" id="event-modal">
-  <div class="modal" style="max-width:640px;">
+  <div class="modal">
     <div class="modal-header">
-      <h3 class="heading" style="font-size:1.1rem;" id="event-modal-title">Create Event</h3>
+      <div><div class="eyebrow">Events</div><h3 style="font-family:var(--font-head);font-weight:700;" id="ev-modal-title">New Event</h3></div>
       <button class="modal-close" onclick="closeEventModal()">✕</button>
     </div>
-    <div id="event-modal-alert" class="hidden"></div>
-    <input type="hidden" id="event-id">
-
-    <div class="form-row col2 mb-md">
-      <div class="form-group" style="margin-bottom:0;grid-column:1/-1;"><label class="form-label">Event Title *</label><input type="text" id="event-title" placeholder="Synapse Tech Summit 2025"></div>
+    <div id="ev-alert" class="hidden"></div>
+    <div class="form-group"><label class="form-label">Event Title *</label><input type="text" id="ev-title" placeholder="Synapse AI Summit 2025"></div>
+    <div class="form-group"><label class="form-label">Description *</label><textarea id="ev-desc" placeholder="Short event description..."></textarea></div>
+    <div class="form-row col2">
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Start Date *</label><input type="date" id="ev-start"></div>
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">End Date *</label><input type="date" id="ev-end"></div>
     </div>
-    <div class="form-group mb-md"><label class="form-label">Description *</label><textarea id="event-desc" placeholder="Brief description of the event..."></textarea></div>
-    <div class="form-row col2 mb-md">
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Venue *</label><input type="text" id="event-venue" placeholder="SMX Convention Center"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Status</label><select id="event-status"><option>Upcoming</option><option>Ongoing</option><option>Completed</option></select></div>
+    <div class="form-group mt-md"><label class="form-label">Venue *</label><input type="text" id="ev-venue" placeholder="SMX Convention Center, Pasay City"></div>
+    <div class="form-row col3 mt-md">
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Status</label><select id="ev-status"><option value="Upcoming">Upcoming</option><option value="Ongoing">Ongoing</option><option value="Completed">Completed</option></select></div>
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Banner Color</label><input type="color" id="ev-color" value="#38bdf8" style="height:40px;padding:4px 6px;"></div>
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Max Seats</label><input type="number" id="ev-capacity" placeholder="500" min="1"></div>
     </div>
-    <div class="form-row col2 mb-md">
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Start Date *</label><input type="datetime-local" id="event-start"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">End Date *</label><input type="datetime-local" id="event-end"></div>
-    </div>
-    <div class="form-row col2 mb-md">
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Ticket Price (₱)</label><input type="number" id="event-price-general" value="0" placeholder="0 for free"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Total Capacity</label><input type="number" id="event-cap-general" value="100"></div>
-    </div>
-    <div class="form-group mb-xl">
-      <label class="form-label">Banner Color</label>
-      <div class="flex gap-sm items-center">
-        <input type="color" id="event-color" value="#38bdf8" style="width:60px;height:36px;padding:2px;cursor:pointer;">
-        <span class="caption">Accent color shown on event cards</span>
-      </div>
-    </div>
-
-    <div class="flex gap-sm justify-center">
+    <div class="flex gap-sm mt-lg justify-between">
       <button class="btn btn-ghost" onclick="closeEventModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveEvent()">Save Event</button>
     </div>
   </div>
 </div>
 
+<!-- REG DETAIL MODAL -->
+<div class="modal-overlay" id="reg-modal">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <h3 style="font-family:var(--font-head);font-weight:700;">Registration Details</h3>
+      <button class="modal-close" onclick="document.getElementById('reg-modal').classList.remove('show')">✕</button>
+    </div>
+    <div id="reg-detail"></div>
+  </div>
+</div>
+
 <script>
 const API = 'https://synapse-backend-production-6672.up.railway.app';
 let authToken = sessionStorage.getItem('synapse_admin_token') || null;
-let allRegistrations = [];
-let allEvents = [];
-let scanLog = [];
-let editingEventId = null;
+let allRegs = [], allEvents = [], editingEventId = null, currentPanel = 'dashboard';
 
-async function apiFetch(path, options = {}) {
+window.addEventListener('DOMContentLoaded', () => { if (authToken) showApp(); });
+
+async function apiFetch(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json' };
   if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
-  const res = await fetch(API + path, { headers, ...options });
-  if (res.status === 401 || res.status === 403) { adminLogout(); throw new Error('Session expired'); }
-  if (!res.ok) { const e = await res.json().catch(() => ({ error: 'Failed' })); throw new Error(e.error || 'Failed'); }
+  const res = await fetch(API + path, { headers, ...opts });
+  if (res.status === 401) { adminLogout(); throw new Error('Session expired'); }
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Request failed'); }
   return res.json();
 }
 
-// ── Auth ──
 async function adminLogin() {
   const user = document.getElementById('admin-user').value.trim();
   const pass = document.getElementById('admin-pass').value;
-  const err = document.getElementById('login-err');
-  err.classList.add('hidden');
+  const errEl = document.getElementById('login-err');
+  errEl.className = 'alert alert-info'; errEl.textContent = '⏳ Signing in...'; errEl.classList.remove('hidden');
   try {
-    const res = await fetch(API + '/auth/login', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: user, password: pass })
-    });
+    const res = await fetch(API + '/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username:user,password:pass}) });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || 'Login failed');
     authToken = json.token;
     sessionStorage.setItem('synapse_admin_token', authToken);
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('sidebar').style.display = 'flex';
-    document.getElementById('main-content').style.display = 'block';
-    loadDashboard();
-  } catch (e) {
-    err.className = 'alert alert-error';
-    err.textContent = '⚠️ ' + e.message;
-    err.classList.remove('hidden');
-  }
+    errEl.classList.add('hidden');
+    showApp();
+  } catch(e) { errEl.className = 'alert alert-error'; errEl.textContent = '❌ ' + e.message; }
 }
 
-function adminLogout() {
-  authToken = null;
-  sessionStorage.removeItem('synapse_admin_token');
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('sidebar').style.display = 'none';
-  document.getElementById('main-content').style.display = 'none';
-}
-
-// Auto-login if token exists
-if (authToken) {
+function showApp() {
   document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('sidebar').style.display = 'flex';
-  document.getElementById('main-content').style.display = 'block';
+  document.getElementById('app').style.display = 'block';
   loadDashboard();
 }
 
-// ── Navigation ──
+function adminLogout() {
+  authToken = null; sessionStorage.removeItem('synapse_admin_token');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-user').value = '';
+  document.getElementById('admin-pass').value = '';
+  document.getElementById('login-err').classList.add('hidden');
+}
+
 function showPanel(name, el) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   if (el) el.classList.add('active');
-  const titles = { dashboard: 'Dashboard', events: 'Events', registrations: 'Registrations', scanner: 'QR Scanner' };
-  document.getElementById('topbar-title').textContent = titles[name] || name;
-  if (name === 'dashboard') loadDashboard();
-  if (name === 'events') loadAdminEvents();
-  if (name === 'registrations') loadRegistrations();
-  if (name === 'scanner') loadScanLog();
+  const titles = {dashboard:'Dashboard',registrations:'Registrations',events:'Events',scanner:'QR Scanner'};
+  document.getElementById('topbar-title').textContent = titles[name];
+  currentPanel = name;
+  if (name==='dashboard') loadDashboard();
+  if (name==='registrations') loadRegistrations();
+  if (name==='events') loadEvents();
+  if (name==='scanner') loadScanLog();
 }
 
-// ── Dashboard ──
+function refreshCurrent() { showPanel(currentPanel, document.querySelector('.sidebar-link.active')); }
+
+// DASHBOARD
 async function loadDashboard() {
   try {
-    allRegistrations = await apiFetch('/registrations');
-    updateStats();
-    renderRecentTable();
-  } catch (e) { console.error(e); }
-}
-
-function updateStats() {
-  const total = allRegistrations.length;
-  const today = allRegistrations.filter(r => new Date(r.registeredAt).toDateString() === new Date().toDateString()).length;
-  const checked = allRegistrations.filter(r => r.status === 'Checked In').length;
-  const revenue = allRegistrations.reduce((s, r) => s + (r.price || 0), 0);
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-vip').textContent = today;
-  document.getElementById('stat-checked').textContent = checked;
-  document.getElementById('stat-revenue').textContent = revenue > 0 ? '₱' + revenue.toLocaleString() : 'Free';
-}
-
-function renderRecentTable() {
-  const tbody = document.getElementById('recent-tbody');
-  const recent = allRegistrations.slice(0, 8);
-  if (!recent.length) { tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="padding:2rem;color:var(--text-lo);">No registrations yet.</td></tr>`; return; }
-  tbody.innerHTML = recent.map(r => `
-    <tr>
-      <td><span style="font-family:monospace;font-size:0.78rem;color:var(--cyan);">${r.id}</span></td>
-      <td><strong style="color:var(--text-hi);">${r.fullName}</strong></td>
-      <td style="font-size:0.82rem;">${r.event ? r.event.title : '—'}</td>
-      <td><span class="badge badge-cyan">🎟️ Ticket</span></td>
-      <td>${r.status === 'Checked In' ? '<span class="badge badge-green">✅ In</span>' : '<span class="badge" style="background:rgba(148,163,184,0.1);border:1px solid rgba(148,163,184,0.2);color:var(--text-mid);">Registered</span>'}</td>
-    </tr>
-  `).join('');
-}
-
-// ── Events ──
-async function loadAdminEvents() {
-  const grid = document.getElementById('admin-events-grid');
-  try {
-    allEvents = await apiFetch('/events');
-    if (!allEvents.length) {
-      grid.innerHTML = `<div class="card text-center" style="padding:3rem;color:var(--text-lo);">No events yet. Create your first event!</div>`;
-      return;
-    }
-    grid.innerHTML = allEvents.map(e => {
-      const start = new Date(e.startDate).toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
-      const statusBadge = e.status === 'Ongoing' ? '<span class="badge badge-green">🟢 Ongoing</span>'
-        : e.status === 'Upcoming' ? '<span class="badge badge-cyan">🔵 Upcoming</span>'
-        : '<span class="badge" style="background:rgba(100,100,100,0.1);border:1px solid rgba(100,100,100,0.2);color:var(--text-lo);">⚫ Completed</span>';
-      return `
-        <div class="event-admin-card">
-          <div class="event-admin-banner" style="background:${e.bannerColor};"></div>
-          <div class="event-admin-body">
-            <div class="flex justify-between items-center mb-xs">${statusBadge}</div>
-            <div class="event-admin-title">${e.title}</div>
-            <div class="event-admin-meta">📅 ${start} · 📍 ${e.venue}</div>
-            <div class="event-admin-meta" style="margin-top:-0.5rem;">${e.priceGeneral > 0 ? '₱' + Number(e.priceGeneral).toLocaleString() : '🆓 Free'}</div>
-            <div class="event-admin-footer">
-              <button class="btn btn-ghost btn-sm" onclick="editEvent('${e.id}')">✏️ Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteEvent('${e.id}')">🗑️ Delete</button>
-            </div>
-          </div>
-        </div>
-      `;
+    const [regs, events] = await Promise.all([apiFetch('/registrations'), apiFetch('/events')]);
+    allRegs = regs; allEvents = events;
+    document.getElementById('stat-total').textContent = regs.length;
+    document.getElementById('stat-checkedin').textContent = regs.filter(r=>r.status==='Checked In').length;
+    document.getElementById('stat-events').textContent = events.length;
+    document.getElementById('stat-active').textContent = events.filter(e=>e.status==='Upcoming'||e.status==='Ongoing').length;
+    const recent = [...regs].sort((a,b)=>new Date(b.registeredAt)-new Date(a.registeredAt)).slice(0,10);
+    const tbody = document.getElementById('dash-tbody');
+    if (!recent.length) { tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="padding:2rem;color:var(--text-lo);">No registrations yet.</td></tr>`; return; }
+    tbody.innerHTML = recent.map(r => {
+      const ev = events.find(e=>e.id===r.eventId);
+      const date = new Date(r.registeredAt).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
+      return `<tr>
+        <td style="font-weight:600;">${r.fullName}</td>
+        <td style="color:var(--text-mid);font-size:0.82rem;">${r.email}</td>
+        <td style="font-size:0.82rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ev?ev.title:'—'}</td>
+        <td>${r.status==='Checked In'?'<span class="badge badge-green">✅ Checked In</span>':'<span class="badge badge-cyan">🎟️ Registered</span>'}</td>
+        <td style="color:var(--text-lo);font-size:0.8rem;">${date}</td>
+      </tr>`;
     }).join('');
-  } catch (e) {
-    grid.innerHTML = `<div class="card" style="color:var(--danger);">Error: ${e.message}</div>`;
-  }
+  } catch(e) { console.error(e); }
 }
 
-function openEventModal(event = null) {
-  editingEventId = event ? event.id : null;
-  document.getElementById('event-modal-title').textContent = event ? 'Edit Event' : 'Create Event';
-  document.getElementById('event-id').value = event ? event.id : '';
-  document.getElementById('event-title').value = event ? event.title : '';
-  document.getElementById('event-desc').value = event ? event.description : '';
-  document.getElementById('event-venue').value = event ? event.venue : '';
-  document.getElementById('event-status').value = event ? event.status : 'Upcoming';
-  document.getElementById('event-start').value = event ? new Date(event.startDate).toISOString().slice(0,16) : '';
-  document.getElementById('event-end').value = event ? new Date(event.endDate).toISOString().slice(0,16) : '';
-  document.getElementById('event-price-general').value = event ? event.priceGeneral : 0;
-  document.getElementById('event-cap-general').value = event ? event.capacityGeneral : 100;
-  document.getElementById('event-color').value = event ? event.bannerColor : '#38bdf8';
-  document.getElementById('event-modal-alert').classList.add('hidden');
-  document.getElementById('event-modal').classList.add('show');
-}
-
-function closeEventModal() {
-  document.getElementById('event-modal').classList.remove('show');
-  editingEventId = null;
-}
-
-async function editEvent(id) {
-  const event = allEvents.find(e => e.id === id);
-  if (event) openEventModal(event);
-}
-
-async function saveEvent() {
-  const alertEl = document.getElementById('event-modal-alert');
-  const title = document.getElementById('event-title').value.trim();
-  const desc = document.getElementById('event-desc').value.trim();
-  const venue = document.getElementById('event-venue').value.trim();
-  const start = document.getElementById('event-start').value;
-  const end = document.getElementById('event-end').value;
-
-  if (!title || !desc || !venue || !start || !end) {
-    alertEl.className = 'alert alert-error';
-    alertEl.textContent = '⚠️ Please fill in all required fields.';
-    alertEl.classList.remove('hidden');
-    return;
-  }
-
-  const payload = {
-    title, description: desc, venue,
-    status: document.getElementById('event-status').value,
-    startDate: new Date(start).toISOString(),
-    endDate: new Date(end).toISOString(),
-    priceGeneral: parseFloat(document.getElementById('event-price-general').value) || 0,
-    priceVIP: parseFloat(document.getElementById('event-price-general').value) || 0,
-    priceStudent: parseFloat(document.getElementById('event-price-general').value) || 0,
-    capacityGeneral: parseInt(document.getElementById('event-cap-general').value) || 100,
-    capacityVIP: parseInt(document.getElementById('event-cap-general').value) || 100,
-    capacityStudent: parseInt(document.getElementById('event-cap-general').value) || 100,
-    bannerColor: document.getElementById('event-color').value
-  };
-
-  try {
-    alertEl.className = 'alert alert-info';
-    alertEl.textContent = '⏳ Saving...';
-    alertEl.classList.remove('hidden');
-
-    if (editingEventId) {
-      await apiFetch('/events/' + editingEventId, { method: 'PATCH', body: JSON.stringify(payload) });
-    } else {
-      await apiFetch('/events', { method: 'POST', body: JSON.stringify(payload) });
-    }
-
-    closeEventModal();
-    loadAdminEvents();
-  } catch (e) {
-    alertEl.className = 'alert alert-error';
-    alertEl.textContent = '❌ ' + e.message;
-  }
-}
-
-async function deleteEvent(id) {
-  if (!confirm('Delete this event? This cannot be undone.')) return;
-  try {
-    await apiFetch('/events/' + id, { method: 'DELETE' });
-    loadAdminEvents();
-  } catch (e) { alert('Delete failed: ' + e.message); }
-}
-
-// ── Registrations ──
+// REGISTRATIONS
 async function loadRegistrations() {
+  document.getElementById('reg-tbody').innerHTML = `<tr><td colspan="8" class="text-center" style="padding:2rem;color:var(--text-lo);">Loading...</td></tr>`;
   try {
-    allRegistrations = await apiFetch('/registrations');
-    renderRegTable();
-  } catch (e) { console.error(e); }
+    const [regs, events] = await Promise.all([apiFetch('/registrations'), apiFetch('/events')]);
+    allRegs = regs; allEvents = events;
+    const filter = document.getElementById('event-filter');
+    filter.innerHTML = '<option value="">All Events</option>' + events.map(e=>`<option value="${e.id}">${e.title}</option>`).join('');
+    renderRegTable(regs);
+  } catch(e) {
+    document.getElementById('reg-tbody').innerHTML = `<tr><td colspan="8" class="text-center" style="padding:2rem;color:var(--danger);">❌ ${e.message}</td></tr>`;
+  }
 }
 
-function renderRegTable() {
-  const search = (document.getElementById('reg-search')?.value || '').toLowerCase();
-  const typeFilter = document.getElementById('reg-filter-type')?.value || '';
-  const statusFilter = document.getElementById('reg-filter-status')?.value || '';
-
-  let filtered = allRegistrations.filter(r => {
-    const match = !search || r.fullName.toLowerCase().includes(search) || r.email.toLowerCase().includes(search) || r.id.toLowerCase().includes(search) || (r.org||'').toLowerCase().includes(search);
-    return match && (!statusFilter || r.status === statusFilter);
-  });
-
+function renderRegTable(regs) {
   const tbody = document.getElementById('reg-tbody');
-  if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="padding:2.5rem;color:var(--text-lo);">No registrations found.</td></tr>`; return; }
-
-  tbody.innerHTML = filtered.map(r => {
-    const dateStr = new Date(r.registeredAt).toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
-    const statusBadge = r.status === 'Checked In' ? '<span class="badge badge-green">✅ Checked In</span>' : '<span class="badge" style="background:rgba(148,163,184,0.1);border:1px solid rgba(148,163,184,0.2);color:var(--text-mid);">Registered</span>';
+  document.getElementById('reg-count').textContent = `Showing ${regs.length} of ${allRegs.length} registrations`;
+  if (!regs.length) { tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:2.5rem;color:var(--text-lo);">No registrations found.</td></tr>`; return; }
+  tbody.innerHTML = regs.map(r => {
+    const ev = allEvents.find(e=>e.id===r.eventId);
+    const date = new Date(r.registeredAt).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
     return `<tr>
-      <td><span style="font-family:monospace;font-size:0.78rem;color:var(--cyan);">${r.id}</span></td>
-      <td><strong style="color:var(--text-hi);">${r.fullName}</strong></td>
-      <td style="font-size:0.8rem;">${r.email}</td>
-      <td style="font-size:0.8rem;">${r.event ? r.event.title : '—'}</td>
-      <td>${dateStr}</td>
-      <td>${statusBadge}</td>
-      <td>
-        <div class="flex gap-xs">
-          ${r.status !== 'Checked In' ? `<button class="btn btn-success btn-sm" onclick="checkIn('${r.id}')">✓ In</button>` : `<button class="btn btn-danger btn-sm" onclick="uncheckIn('${r.id}')">✗ Undo</button>`}
-          <button class="btn btn-danger btn-sm" onclick="deleteReg('${r.id}')">🗑️</button>
-        </div>
-      </td>
+      <td style="font-family:monospace;font-size:0.8rem;color:var(--cyan);cursor:pointer;" onclick="viewReg('${r.id}')">${r.id}</td>
+      <td style="font-weight:600;">${r.fullName}</td>
+      <td style="color:var(--text-mid);font-size:0.82rem;">${r.email}</td>
+      <td style="font-size:0.82rem;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ev?ev.title:'—'}</td>
+      <td style="font-size:0.82rem;color:var(--text-mid);">${r.org||'—'}</td>
+      <td>${r.status==='Checked In'?'<span class="badge badge-green">✅ Checked In</span>':'<span class="badge badge-cyan">🎟️ Registered</span>'}</td>
+      <td style="color:var(--text-lo);font-size:0.8rem;">${date}</td>
+      <td><div class="flex gap-sm">
+        ${r.status==='Checked In'
+          ?`<button class="btn btn-ghost btn-sm" onclick="toggleCheckin('${r.id}','out')">↩ Undo</button>`
+          :`<button class="btn btn-success btn-sm" onclick="toggleCheckin('${r.id}','in')">✅ In</button>`}
+        <button class="btn btn-danger btn-sm" onclick="deleteReg('${r.id}')">🗑</button>
+      </div></td>
     </tr>`;
   }).join('');
 }
 
-async function checkIn(id) {
-  try {
-    const updated = await apiFetch('/registrations/' + id + '/checkin', { method: 'PATCH' });
-    const idx = allRegistrations.findIndex(r => r.id === id);
-    if (idx !== -1) allRegistrations[idx] = { ...allRegistrations[idx], ...updated };
-    updateStats(); renderRegTable();
-  } catch (e) { alert('Check-in failed: ' + e.message); }
+function filterRegs(query) {
+  const eventId = document.getElementById('event-filter').value;
+  let filtered = allRegs;
+  if (eventId) filtered = filtered.filter(r=>r.eventId===eventId);
+  if (query) {
+    const q = query.toLowerCase();
+    filtered = filtered.filter(r => r.fullName?.toLowerCase().includes(q)||r.email?.toLowerCase().includes(q)||r.id?.toLowerCase().includes(q)||r.org?.toLowerCase().includes(q));
+  }
+  renderRegTable(filtered);
 }
 
-async function uncheckIn(id) {
+function viewReg(id) {
+  const r = allRegs.find(x=>x.id===id);
+  if (!r) return;
+  const ev = allEvents.find(e=>e.id===r.eventId);
+  const date = new Date(r.registeredAt).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'});
+  const rows = [['Ticket ID',`<span style="font-family:monospace;color:var(--cyan);">${r.id}</span>`],['Full Name',r.fullName],['Email',r.email],['Phone',r.phone||'—'],['Organization',r.org||'—'],['Designation',r.designation||'—'],['Event',ev?ev.title:'—'],['Session',r.session||'—'],['Dietary',r.dietary||'—'],['Notes',r.notes||'—'],['Status',r.status==='Checked In'?'<span class="badge badge-green">✅ Checked In</span>':'<span class="badge badge-cyan">🎟️ Registered</span>'],['Registered',date]];
+  document.getElementById('reg-detail').innerHTML = `
+    <div style="display:grid;gap:0;">${rows.map(([l,v])=>`<div style="display:flex;gap:1rem;padding:0.6rem 0;border-bottom:1px solid var(--border);"><div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-lo);width:110px;flex-shrink:0;padding-top:2px;">${l}</div><div style="font-size:0.875rem;">${v}</div></div>`).join('')}</div>
+    <div class="flex gap-sm mt-lg">
+      ${r.status==='Checked In'?`<button class="btn btn-ghost" onclick="toggleCheckin('${r.id}','out');document.getElementById('reg-modal').classList.remove('show')">↩ Undo</button>`:`<button class="btn btn-success" onclick="toggleCheckin('${r.id}','in');document.getElementById('reg-modal').classList.remove('show')">✅ Check In</button>`}
+      <button class="btn btn-danger" onclick="deleteReg('${r.id}');document.getElementById('reg-modal').classList.remove('show')">🗑 Delete</button>
+    </div>`;
+  document.getElementById('reg-modal').classList.add('show');
+}
+
+async function toggleCheckin(id, dir) {
   try {
-    const updated = await apiFetch('/registrations/' + id + '/uncheckin', { method: 'PATCH' });
-    const idx = allRegistrations.findIndex(r => r.id === id);
-    if (idx !== -1) allRegistrations[idx] = { ...allRegistrations[idx], ...updated };
-    updateStats(); renderRegTable();
-  } catch (e) { alert('Undo failed: ' + e.message); }
+    const path = dir==='in' ? '/registrations/'+id+'/checkin' : '/registrations/'+id+'/uncheckin';
+    await apiFetch(path, {method:'PATCH'});
+    const r = allRegs.find(x=>x.id===id);
+    if (r) r.status = dir==='in' ? 'Checked In' : 'Registered';
+    renderRegTable(allRegs);
+  } catch(e) { alert('Error: '+e.message); }
 }
 
 async function deleteReg(id) {
   if (!confirm('Delete this registration?')) return;
   try {
-    await apiFetch('/registrations/' + id, { method: 'DELETE' });
-    allRegistrations = allRegistrations.filter(r => r.id !== id);
-    updateStats(); renderRegTable();
-  } catch (e) { alert('Delete failed: ' + e.message); }
+    await apiFetch('/registrations/'+id, {method:'DELETE'});
+    allRegs = allRegs.filter(r=>r.id!==id);
+    renderRegTable(allRegs);
+  } catch(e) { alert('Error: '+e.message); }
 }
 
 async function exportCSV() {
   try {
-    const res = await fetch(API + '/registrations/export/csv', { headers: { 'Authorization': 'Bearer ' + authToken } });
-    if (!res.ok) throw new Error('Export failed');
-    const text = await res.text();
-    const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+    const res = await fetch(API+'/registrations/export/csv', {headers:{'Authorization':'Bearer '+authToken}});
+    const blob = await res.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'synapse-registrations.csv';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(a.href);
-  } catch (e) { alert('Export failed: ' + e.message); }
+    a.click();
+  } catch(e) { alert('Export failed: '+e.message); }
 }
 
-// ── Scanner ──
-async function scanTicket() {
-  const input = document.getElementById('scan-input').value.trim();
-  const resultEl = document.getElementById('scan-result');
-  if (!input) { resultEl.className = 'alert alert-error'; resultEl.textContent = '⚠️ Please enter a ticket ID.'; resultEl.classList.remove('hidden'); return; }
-
-  const ticketId = input.includes('|') ? input.split('|')[0] : input.toUpperCase();
-  resultEl.className = 'alert alert-info'; resultEl.textContent = '⏳ Looking up ticket...'; resultEl.classList.remove('hidden');
-
+// EVENTS
+async function loadEvents() {
+  const container = document.getElementById('events-list');
+  container.innerHTML = `<div class="card text-center" style="padding:2rem;color:var(--text-lo);">Loading...</div>`;
   try {
-    let ticket;
-    try { ticket = await apiFetch('/registrations/' + ticketId); }
-    catch (e) { resultEl.className = 'alert alert-error'; resultEl.textContent = `❌ Ticket ${ticketId} not found.`; return; }
+    allEvents = await apiFetch('/events');
+    if (!allEvents.length) { container.innerHTML = `<div class="card text-center" style="padding:3rem;color:var(--text-lo);">No events yet. Click "+ New Event" to create one.</div>`; return; }
+    container.innerHTML = allEvents.map(e => {
+      const start = new Date(e.startDate).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
+      const badge = e.status==='Ongoing'?'<span class="badge badge-green">🟢 Ongoing</span>':e.status==='Upcoming'?'<span class="badge badge-cyan">🔵 Upcoming</span>':'<span class="badge badge-gray">⚫ Completed</span>';
+      return `<div class="card" style="display:grid;grid-template-columns:5px 1fr auto;gap:1.25rem;align-items:center;padding:1.25rem 1.5rem;">
+        <div style="width:5px;border-radius:3px;background:${e.bannerColor};align-self:stretch;min-height:48px;"></div>
+        <div>
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:4px;">
+            <span style="font-family:var(--font-head);font-weight:700;">${e.title}</span>${badge}
+          </div>
+          <div style="font-size:0.82rem;color:var(--text-mid);">📅 ${start} &nbsp;·&nbsp; 📍 ${e.venue}</div>
+          <div style="font-size:0.78rem;color:var(--text-lo);margin-top:3px;">${(e.description||'').substring(0,80)}...</div>
+        </div>
+        <div class="flex gap-sm">
+          <button class="btn btn-ghost btn-sm" onclick="openEventModal('${e.id}')">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteEvent('${e.id}')">🗑</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { container.innerHTML = `<div class="card" style="color:var(--danger);padding:2rem;">❌ ${e.message}</div>`; }
+}
 
-    if (ticket.status === 'Checked In') {
-      resultEl.className = 'alert alert-warning';
-      resultEl.innerHTML = `⚠️ <strong>Already Checked In</strong> — ${ticket.fullName} (${ticket.type})<br><small>At: ${new Date(ticket.checkedInAt).toLocaleString('en-PH')}</small>`;
+function openEventModal(id) {
+  editingEventId = id || null;
+  document.getElementById('ev-modal-title').textContent = id ? 'Edit Event' : 'New Event';
+  document.getElementById('ev-alert').classList.add('hidden');
+  if (id) {
+    const ev = allEvents.find(e=>e.id===id);
+    if (ev) {
+      document.getElementById('ev-title').value = ev.title||'';
+      document.getElementById('ev-desc').value = ev.description||'';
+      document.getElementById('ev-start').value = ev.startDate?ev.startDate.substring(0,10):'';
+      document.getElementById('ev-end').value = ev.endDate?ev.endDate.substring(0,10):'';
+      document.getElementById('ev-venue').value = ev.venue||'';
+      document.getElementById('ev-status').value = ev.status||'Upcoming';
+      document.getElementById('ev-color').value = ev.bannerColor||'#38bdf8';
+      document.getElementById('ev-capacity').value = ev.capacity||'';
+    }
+  } else {
+    ['ev-title','ev-desc','ev-venue','ev-start','ev-end','ev-capacity'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('ev-status').value='Upcoming';
+    document.getElementById('ev-color').value='#38bdf8';
+  }
+  document.getElementById('event-modal').classList.add('show');
+}
+function closeEventModal() { document.getElementById('event-modal').classList.remove('show'); }
+
+async function saveEvent() {
+  const alertEl = document.getElementById('ev-alert');
+  const title = document.getElementById('ev-title').value.trim();
+  const desc = document.getElementById('ev-desc').value.trim();
+  const start = document.getElementById('ev-start').value;
+  const end = document.getElementById('ev-end').value;
+  const venue = document.getElementById('ev-venue').value.trim();
+  if (!title||!desc||!start||!end||!venue) {
+    alertEl.className='alert alert-error'; alertEl.textContent='⚠️ Please fill in all required fields.'; alertEl.classList.remove('hidden'); return;
+  }
+  const payload = { title, description:desc, startDate:new Date(start).toISOString(), endDate:new Date(end).toISOString(), venue, status:document.getElementById('ev-status').value, bannerColor:document.getElementById('ev-color').value, priceGeneral:0, priceVIP:0, priceStudent:0, capacity:parseInt(document.getElementById('ev-capacity').value)||500 };
+  alertEl.className='alert alert-info'; alertEl.textContent='⏳ Saving...'; alertEl.classList.remove('hidden');
+  try {
+    if (editingEventId) await apiFetch('/events/'+editingEventId, {method:'PATCH',body:JSON.stringify(payload)});
+    else await apiFetch('/events', {method:'POST',body:JSON.stringify(payload)});
+    closeEventModal(); loadEvents();
+  } catch(e) { alertEl.className='alert alert-error'; alertEl.textContent='❌ '+e.message; }
+}
+
+async function deleteEvent(id) {
+  if (!confirm('Delete this event?')) return;
+  try { await apiFetch('/events/'+id, {method:'DELETE'}); loadEvents(); }
+  catch(e) { alert('Error: '+e.message); }
+}
+
+// SCANNER
+async function doScan() {
+  const ticketId = document.getElementById('scan-input').value.trim();
+  const resultEl = document.getElementById('scan-result');
+  if (!ticketId) return;
+  resultEl.innerHTML = `<div style="padding:1rem;color:var(--text-mid);">⏳ Looking up ticket...</div>`;
+  try {
+    const ticket = await apiFetch('/registrations/'+ticketId);
+    if (ticket.status==='Checked In') {
+      resultEl.innerHTML = `<div class="scan-result ok"><div style="font-size:1.5rem;">⚠️</div><div style="font-weight:700;color:var(--warning);margin-top:6px;">Already Checked In</div><div style="font-size:0.875rem;color:var(--text-mid);margin-top:4px;">${ticket.fullName}</div></div>`;
       return;
     }
-
-    await apiFetch('/registrations/' + ticketId + '/checkin', { method: 'PATCH' });
-    resultEl.className = 'alert alert-success';
-    resultEl.innerHTML = `✅ <strong>Check-in Successful!</strong><br>${ticket.fullName} — ${ticket.type} Pass`;
+    await apiFetch('/registrations/'+ticketId+'/checkin', {method:'PATCH'});
+    resultEl.innerHTML = `<div class="scan-result ok"><div style="font-size:2rem;">🎉</div><div style="font-weight:700;color:var(--success);font-size:1rem;margin-top:6px;">Checked In!</div><div style="font-weight:600;margin-top:4px;">${ticket.fullName}</div><div style="font-size:0.82rem;color:var(--text-mid);">${ticket.email}</div></div>`;
     document.getElementById('scan-input').value = '';
-    await loadScanLog();
-    setTimeout(() => resultEl.classList.add('hidden'), 5000);
-  } catch (e) {
-    resultEl.className = 'alert alert-error';
-    resultEl.textContent = '❌ ' + e.message;
+    loadScanLog();
+  } catch(e) {
+    resultEl.innerHTML = `<div class="scan-result err"><div style="font-size:1.5rem;">❌</div><div style="font-weight:700;color:var(--danger);margin-top:6px;">${e.message==='Not found'?'Ticket not found':e.message}</div></div>`;
   }
 }
 
 async function loadScanLog() {
+  const logEl = document.getElementById('scan-log');
   try {
     const scans = await apiFetch('/scans');
-    scanLog = scans;
-    const log = document.getElementById('scan-log');
-    const badge = document.getElementById('scan-count-badge');
-    const today = new Date().toDateString();
-    const todayScans = scans.filter(s => new Date(s.time).toDateString() === today);
-    badge.textContent = todayScans.length + ' today';
-
-    if (!scans.length) { log.innerHTML = `<div class="text-center" style="padding:2rem;color:var(--text-lo);"><p class="caption">No check-ins yet.</p></div>`; return; }
-
-    log.innerHTML = scans.slice(0,15).map(s => {
-      const timeStr = new Date(s.time).toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' });
-      return `
-        <div class="flex justify-between items-center" style="padding:0.75rem 1rem;border-bottom:1px solid var(--border);">
-          <div class="flex items-center gap-sm">
-            <span class="badge badge-green" style="font-size:0.65rem;">✅</span>
-            <div>
-              <div style="font-size:0.85rem;font-weight:600;color:var(--text-hi);">${s.name}</div>
-              <div class="caption">${s.ticketId} · ${s.type}</div>
-            </div>
-          </div>
-          <span style="font-size:0.75rem;color:var(--text-lo);">${timeStr}</span>
-        </div>
-      `;
+    document.getElementById('scan-badge').textContent = scans.length + ' check-ins';
+    if (!scans.length) { logEl.innerHTML = `<div class="text-center" style="padding:2rem;color:var(--text-lo);font-size:0.875rem;">No check-ins yet.</div>`; return; }
+    logEl.innerHTML = scans.slice(0,30).map(s => {
+      const time = new Date(s.scannedAt||s.createdAt).toLocaleString('en-PH',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+      return `<div class="scan-log-item"><div><div style="font-weight:600;">${s.fullName||s.registration?.fullName||'Unknown'}</div><div style="font-size:0.78rem;color:var(--text-lo);">${s.ticketId||s.registrationId||''}</div></div><div style="font-size:0.78rem;color:var(--text-lo);white-space:nowrap;">${time}</div></div>`;
     }).join('');
-  } catch (e) { console.error(e); }
+  } catch(e) { logEl.innerHTML = `<div class="text-center" style="padding:2rem;color:var(--text-lo);">Could not load log.</div>`; }
 }
 </script>
 </body>
