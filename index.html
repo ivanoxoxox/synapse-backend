@@ -306,11 +306,10 @@ footer{padding:3rem;border-top:1px solid var(--border);}
   <div class="nav-links">
     <button class="nav-link active" onclick="showPage('home');setActive(this)">Home</button>
     <button class="nav-link" onclick="showPage('events');setActive(this)">Events</button>
-    <button class="nav-link" onclick="showPage('tickets');setActive(this)">My Tickets</button>
+    <button class="nav-link" id="nav-tickets-link" style="display:none;" onclick="showPage('tickets');setActive(this)">My Tickets</button>
   </div>
   <div class="nav-right" id="nav-user-area">
-    <button class="btn btn-ghost btn-sm" onclick="showPage('login');setActive(null)">Sign In</button>
-    <button class="btn btn-primary btn-sm" onclick="showPage('signup');setActive(null)">Sign Up</button>
+    <button class="btn btn-primary btn-sm" onclick="showPage('login');setActive(null)">Sign In</button>
   </div>
 </nav>
 
@@ -339,8 +338,8 @@ footer{padding:3rem;border-top:1px solid var(--border);}
         </h1>
         <p class="hero-sub">The Philippines' premier tech conference series. Bringing together builders, designers, and innovators for unforgettable events.</p>
         <div class="hero-btns">
-          <button class="btn btn-primary btn-lg" onclick="showPage('events');setActive(document.querySelectorAll('.nav-link')[1])">Browse Events →</button>
-          <button class="btn btn-secondary btn-lg" onclick="showPage('signup');setActive(null)">Create Account</button>
+          <button class="btn btn-primary btn-lg" onclick="showPage('events');setActive(document.querySelectorAll('.nav-link')[1])">Browse Events</button>
+          <button class="btn btn-secondary btn-lg" onclick="showPage('login');setActive(null)">Sign In</button>
         </div>
         <div class="hero-stats">
           <div class="hero-stat"><div class="hero-stat-val">5+</div><div class="hero-stat-label">Active Events</div></div>
@@ -562,7 +561,7 @@ footer{padding:3rem;border-top:1px solid var(--border);}
       <h2 style="font-family:var(--font-head);font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-0.02em;margin-bottom:1rem;">Ready to be part<br>of the movement?</h2>
       <p class="subtext" style="max-width:480px;margin:0 auto 2.5rem;">Create your free account and get access to all upcoming Synapse events instantly.</p>
       <div class="flex gap-md justify-center">
-        <button class="btn btn-primary btn-lg" onclick="showPage('signup');setActive(null)">Create Free Account</button>
+        <button class="btn btn-primary btn-lg" onclick="showPage('login');setActive(null)">Sign In to Register</button>
         <button class="btn btn-secondary btn-lg" onclick="showPage('events');setActive(document.querySelectorAll('.nav-link')[1])">Browse Events</button>
       </div>
     </div>
@@ -684,19 +683,11 @@ footer{padding:3rem;border-top:1px solid var(--border);}
         <div class="form-group" style="margin-bottom:0;"><label class="form-label">Last Name *</label><div class="input-wrap"><span class="icon">👤</span><input type="text" id="reg-lastname" placeholder="Dela Cruz"></div></div>
       </div>
       <div class="form-group mb-md"><label class="form-label">Email *</label><div class="input-wrap"><span class="icon">✉️</span><input type="email" id="reg-email" placeholder="juan@example.com"></div></div>
-      <div class="form-row col2 mb-md">
+      <div class="form-row col2 mb-lg">
         <div class="form-group" style="margin-bottom:0;"><label class="form-label">Phone</label><div class="input-wrap"><span class="icon">📱</span><input type="tel" id="reg-phone" placeholder="09XX XXX XXXX"></div></div>
         <div class="form-group" style="margin-bottom:0;"><label class="form-label">Organization</label><div class="input-wrap"><span class="icon">🏢</span><input type="text" id="reg-org" placeholder="Company / School"></div></div>
       </div>
-      <div class="form-row col2 mb-md">
-        <div class="form-group" style="margin-bottom:0;"><label class="form-label">Designation</label><div class="input-wrap"><span class="icon">💼</span><input type="text" id="reg-designation" placeholder="Role / Year & Course"></div></div>
-        <div class="form-group" style="margin-bottom:0;"><label class="form-label">Session Interest</label><div class="input-wrap"><span class="icon">🎯</span><select id="reg-session" style="padding-left:2.8rem;"><option value="">Select track...</option><option>Artificial Intelligence</option><option>Data Science & ML</option><option>Cybersecurity</option><option>UX & Product Design</option><option>Cloud & DevOps</option><option>Web3 & Blockchain</option></select></div></div>
-      </div>
-      <div class="form-row col2 mb-md">
-        <div class="form-group" style="margin-bottom:0;"><label class="form-label">Dietary</label><div class="input-wrap"><span class="icon">🍽️</span><select id="reg-dietary" style="padding-left:2.8rem;"><option value="None">None</option><option>Vegetarian</option><option>Vegan</option><option>Halal</option><option>Gluten-free</option></select></div></div>
-      </div>
-      <div class="form-group mb-xl"><label class="form-label">Notes</label><textarea id="reg-notes" placeholder="Special requests, accessibility needs..."></textarea></div>
-      <button class="btn btn-primary btn-full btn-lg" onclick="submitRegistration()">Register & Get Ticket →</button>
+      <button class="btn btn-primary btn-full btn-lg" onclick="submitRegistration()">Register & Get Ticket</button>
     </div>
   </div>
 </div>
@@ -767,6 +758,14 @@ async function apiFetch(path, options = {}) {
 
 // ── Navigation ──
 function showPage(name) {
+  // Guard My Tickets — must be logged in
+  if (name === 'tickets' && (!currentUser || !userToken)) {
+    name = 'login';
+    const alertEl = document.getElementById('login-alert');
+    alertEl.className = 'alert alert-info';
+    alertEl.textContent = '🔐 Please sign in to view your tickets.';
+    alertEl.classList.remove('hidden');
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -782,15 +781,17 @@ function setActive(el) {
 
 function updateNavUser() {
   const area = document.getElementById('nav-user-area');
+  const ticketsLink = document.getElementById('nav-tickets-link');
   if (currentUser) {
+    ticketsLink.style.display = '';
     area.innerHTML = `
       <div class="nav-user-badge">👤 ${currentUser.fullName.split(' ')[0]}</div>
       <button class="btn btn-ghost btn-sm" onclick="userLogout()">Sign Out</button>
     `;
   } else {
+    ticketsLink.style.display = 'none';
     area.innerHTML = `
-      <button class="btn btn-ghost btn-sm" onclick="showPage('login');setActive(null)">Sign In</button>
-      <button class="btn btn-primary btn-sm" onclick="showPage('signup');setActive(null)">Sign Up</button>
+      <button class="btn btn-primary btn-sm" onclick="showPage('login');setActive(null)">Sign In</button>
     `;
   }
 }
@@ -906,19 +907,29 @@ function renderEventsGrid(events, grid) {
     grid.innerHTML = `<div class="card text-center" style="padding:3rem;color:var(--text-lo);">No events found.</div>`;
     return;
   }
-  grid.innerHTML = events.map(e => {
+  grid.innerHTML = events.map((e, i) => {
     const dateStr = new Date(e.startDate).toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
     const statusBadge = e.status === 'Ongoing'
       ? `<span class="badge badge-green">🟢 Ongoing</span>`
       : e.status === 'Upcoming'
       ? `<span class="badge badge-cyan">🔵 Upcoming</span>`
       : `<span class="badge" style="background:rgba(100,100,100,0.1);border:1px solid rgba(100,100,100,0.2);color:var(--text-lo);">⚫ Completed</span>`;
+    const photos = [
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=220&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=220&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&h=220&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&h=220&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=220&fit=crop&q=80',
+    ];
+    const photo = photos[i % photos.length];
     return `
       <div class="event-card" onclick="openEventRegistration('${e.id}')">
-        <div class="event-banner-bar" style="background:${e.bannerColor};"></div>
-        <div class="event-img-placeholder">🎤</div>
+        <div style="position:relative;">
+          <img src="${photo}" alt="${e.title}" style="width:100%;height:180px;object-fit:cover;display:block;">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${e.bannerColor};"></div>
+          <div style="position:absolute;top:10px;left:10px;">${statusBadge}</div>
+        </div>
         <div class="event-body">
-          <div class="event-meta">${statusBadge}</div>
           <div class="event-title">${e.title}</div>
           <div class="event-desc">${e.description}</div>
           <div style="display:flex;flex-direction:column;gap:0.35rem;margin-bottom:1.25rem;">
@@ -929,7 +940,7 @@ function renderEventsGrid(events, grid) {
             <div class="event-price">Free</div>
             ${e.status === 'Completed'
               ? '<span style="color:var(--text-lo);font-size:0.82rem;">Event ended</span>'
-              : '<button class="btn btn-primary btn-sm">Register →</button>'}
+              : '<button class="btn btn-primary btn-sm">Register</button>'}
           </div>
         </div>
       </div>
@@ -1018,18 +1029,14 @@ async function submitRegistration() {
       firstName: fn, lastName: ln, fullName: fn + ' ' + ln,
       email, phone: document.getElementById('reg-phone').value.trim(),
       org: document.getElementById('reg-org').value.trim(),
-      designation: document.getElementById('reg-designation').value.trim(),
-      session: document.getElementById('reg-session').value,
-      dietary: document.getElementById('reg-dietary').value,
-      notes: document.getElementById('reg-notes').value.trim(),
-      studentId: '',
+      designation: '', session: '', dietary: 'None', notes: '', studentId: '',
       type: 'General', price: 0, status: 'Registered',
       eventId: selectedEventId,
       userId: currentUser ? currentUser.id : null
     };
     const ticket = await apiFetch('/registrations', { method: 'POST', body: JSON.stringify(payload) });
     ticket.event = allEvents.find(e => e.id === selectedEventId);
-    ['reg-firstname','reg-lastname','reg-email','reg-phone','reg-org','reg-designation','reg-notes'].forEach(id => {
+    ['reg-firstname','reg-lastname','reg-email','reg-phone','reg-org'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
